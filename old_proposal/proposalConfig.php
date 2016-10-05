@@ -6,55 +6,47 @@
 	 */
 
 	// Set the default event code
-
-$config = SetConfig();
-
-function SetConfig()
-{
-	$config = new stdClass();
 	$defaultEventCode = 'FOL';
+	$eventCode = ISSET($_REQUEST['eventCode']) ? strtoupper($_REQUEST['eventCode']) :  $defaultEventCode;
 
-	$config->eventCode = ISSET($_REQUEST['eventCode']) ? strtoupper($_REQUEST['eventCode']) :  $defaultEventCode;
-
-	switch( $config->eventCode )
+	switch( $eventCode )
 	{
 		case 'FOL':
-			$config->event = 'Feast of Lights';
-			$config->image = 'http://earthspirit.rowantree.org/images/fol09header.jpg';
-			$config->eventDate = 'Date: 10-12 February 2017';
-			$config->title = 'Feast of Lights Presenter/Performer Application';
-			$config->year = '2017';
-			$config->deadLine = 'December 21, 2016';
-			$config->decisionDate = "December 31th";
-			$config->fb_image = 'http://earthspirit.rowantree.org/images/fol_fb.jpg';
+			$event = 'Feast of Lights';
+			$image = 'http://earthspirit.rowantree.org/images/fol09header.jpg';
+			$eventDate = 'Date: 10-12 February 2017';
+			$title = 'Feast of Lights Presenter/Performer Application';
+			$year = '2017';
+			$deadLine = 'December 21, 2016';
+			$decisionDate = "December 31th";
+			$fb_image = 'http://earthspirit.rowantree.org/images/fol_fb.jpg';
 			break;
 
 		case 'ROS':
-			$config->event = 'Rites of Spring';
-			$config->image = 'http://earthspirit.rowantree.org/images/earlybird38_progproposal.png';
-			$config->eventDate = '25 May, 2016';
-			$config->title = 'Rites of Spring Presenter/Performer Application';
-			$config->year = '2016';
-			$config->deadLine = 'March 1, 2016';
-			$config->decisionDate = "April 31th";
-			$config->fb_image = 'http://earthspirit.rowantree.org/images/ros38_Program_head_fb.gif';
+			$event = 'Rites of Spring';
+			$image = 'http://earthspirit.rowantree.org/images/earlybird38_progproposal.png';
+			$eventDate = '25 May, 2016';
+			$title = 'Rites of Spring Presenter/Performer Application';
+			$year = '2016';
+			$deadLine = 'March 1, 2016';
+			$decisionDate = "April 31th";
+			$fb_image = 'http://earthspirit.rowantree.org/images/ros38_Program_head_fb.gif';
 			break;
 
 		default:
-			echo "Invalid Event Code $config->eventCode";
+			echo "Invalid Event Code $eventCode";
 			exit;
 	}
 
 
-	$config->proposalTextSize = 500;
-	$config->proposalCnt = 4;
+	$proposalTextSize = 500;
+	$proposalCnt = 4;
 
 
-	$config->emailNotifyList = "meadwizard@gmail.com, chris@lafond.us, scarthen@gmail.com, darthen@yahoo.com";
-	$config->emailNotifyList = "meadwizard@gmail.com, chris@lafond.us, darthen@yahoo.com";
-	$config->emailNotifyList = "meadwizard@gmail.com, darthen@yahoo.com, sarah.twichell@gmail.com";
-
-    $config->emailNotifyList = "meadwizard@gmail.com";
+	$emailNotifyList = "meadwizard@gmail.com";
+	$emailNotifyList = "meadwizard@gmail.com, chris@lafond.us, scarthen@gmail.com, darthen@yahoo.com";
+	$emailNotifyList = "meadwizard@gmail.com, chris@lafond.us, darthen@yahoo.com";
+	$emailNotifyList = "meadwizard@gmail.com, darthen@yahoo.com, sarah.twichell@gmail.com";
 
 	/*
 	 * Note: the field list array elements are
@@ -63,20 +55,20 @@ function SetConfig()
 	 *   fieldType (textbox)
 	*/
 
-	if ( $config->eventCode == 'ROS' )
+	if ( $eventCode == 'ROS' )
 	{
-		$config->enableFields = Array(
+		$enableFields = Array(
 			'Arrival',
 			'NbrOfTimes'
 		);
 	}
 	else {
-		$config->enableFields = Array();
+		$enableFields = Array();
 	}
 
-	$config->rosFields = Array();
+	$rosFields = Array();
 
-	$config->requiredFields = Array(
+	$requiredFields = Array(
 		Array('LegalName', 'Legal Name', 'textbox'),
 		Array('ProgramName', 'Program Name', 'textbox'),
 		Array('email', 'Email Address', 'textbox'),
@@ -87,33 +79,33 @@ function SetConfig()
 		//Array('NumberOfRites','Attended Rites of Spring', 'radiobutton')
 	);
 
-	if ( $config->eventCode == 'ROS' )
+	if ( $eventCode == 'ROS' )
 	{
-		$config->rosFields = Array(
+		$rosFields = Array(
 			Array('Arrival','When arriving', 'radiobutton'),
 			Array('NumberOfRites','Attended Rites of Spring', 'radiobutton')
 		);
 		//array_push( $requiredFields, $rosFields );
-		$config->requiredFields = array_merge($config->requiredFields, $config->rosFields);
+		$requiredFields = array_merge($requiredFields, $rosFields);
 	}
 
-	$config->fieldList = array_merge($config->requiredFields);
+	$fieldList = array_merge($requiredFields);
 
-	$config->optionalFields = Array ();
+	$optionalFields = Array ();
 	for( $idx=1; $idx<=3; ++$idx )
 	{
-		$propFields = Array(
+		$propFields = Array( 
 			Array("LegalName$idx", "Legal Name $idx", "textbox"),
 			Array("ProgramName$idx", "Program Name $idx", "textbox"),
 			Array("bio$idx", "Bio $idx", "textbox")
 		);
-		array_push( $config->optionalFields, $propFields );
-		$config->fieldList = array_merge($config->fieldList,$propFields);
+		array_push( $optionalFields, $propFields );
+		$fieldList = array_merge($fieldList,$propFields);
 	}
 
 
 	// This is a list of the fields that will appear on the proposal section
-	$config->proposalFields = Array(
+	$proposalFields = Array(
 		Array("Title", "Title ", "textbox"),
 		Array("PresentationType", "Presentation Type ", "radiobutton"),
 		Array("PresentationTypeOther", "Presentation Type Other ", "other"),
@@ -133,12 +125,12 @@ function SetConfig()
 
 
 
-	$config->proposalList = Array();
+	$proposalList = Array();
 
-	for( $idx=1; $idx<=$config->proposalCnt; ++$idx )
+	for( $idx=1; $idx<=$proposalCnt; ++$idx )
 	{
 		$propFields = Array();
-		foreach( $config->proposalFields as $propfld )
+		foreach( $proposalFields as $propfld )
 		{
 			array_push( $propFields, Array(
 				"$propfld[0]$idx",
@@ -165,12 +157,12 @@ function SetConfig()
 				Array("Presentation${idx}", "Presentation ${idx}", "textbox"),
 			);
 
-		array_push( $config->proposalList, $propFields);
-		$config->fieldList = array_merge($config->fieldList,$propFields);
+		array_push( $proposalList, $propFields);
+		$fieldList = array_merge($fieldList,$propFields);
 	}
 
 
-	$config->PresentationType = array (
+	$PresentationType = array (
 		array("Workshop", "Workshop"),
 		array("Discussion", "Discussion Workshop"),
 		array("Ritual", "Ritual"),
@@ -183,7 +175,7 @@ function SetConfig()
 		array("Other", "Other (please explain): ")
 		);
 
-	$config->AgeGroup = array (
+	$AgeGroup = array (
 			array('18+','18+ only'),
 			array('14+','14+'),
 			array('11+','11+'),
@@ -193,30 +185,30 @@ function SetConfig()
 		);
 
 
-	$config->Audience = array (
+	$Audience = array (
 			array('Women','Women Only'),
 			array('Men','Men Only'),
 			array('All','All')
 		);
 
-	$config->TimePreference = array (
+	$TimePreference = array (
 			array('1.5', '1.5 hours'),
 			array('3', '3 hours'),
 			array('Other', 'Other (please explain): ')
 		);
 
-	$config->AttendeeLimit = array (
+	$AttendeeLimit = array (
 		array('No', 'No'),
 		array('Other', 'Yes')
 	);
 
-	$config->MaterialsFee = array (
+	$MaterialsFee = array (
 		array('No', 'No'),
 		array('Other', 'Yes')
 	);
 
 
-	$config->SpacePreference = array (
+	$SpacePreference = array (
 			array('In','Must be inside'),
 			array('Out','Must be outside'),
 			array('PreferIn','Prefer inside'),
@@ -224,7 +216,4 @@ function SetConfig()
 			array('NoPref','No preference'),
 			array('Other','Other (please explain):')
 		);
-
-    return $config;
-}
 ?>

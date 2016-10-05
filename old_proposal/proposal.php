@@ -5,31 +5,28 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>Presentation Proposals for <?php echo $config->event;?></title>
 <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
-<meta property="og:title" content="Presentation Proposals for <?php echo $config->event;?>" />
+<meta property="og:title" content="Presentation Proposals for <?php echo $event;?>" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="http://earthspirit.rowantree.org/proposal/proposal.php" />
-<meta property="og:image" content="<?php echo $config->fb_image;?>" />
+<meta property="og:image" content="<?php echo $fb_image;?>" />
 <link rel="stylesheet" href="proposal.css" type="text/css">
+<script src='https://www.google.com/recaptcha/api.js'></script>
 <?php
-    //<script src='https://www.google.com/recaptcha/api.js'></script>
 	//require('../recaptcha-master/src/autoload.php');
 	//require_once('recaptchalib.php');
 	//$publickey = '6LePYgsAAAAAABRVY4sGhED8v-HR_jyBsUtlf_J-';
 
+
 	$data = array();
 	if (IsSet($_SESSION['RegData'])) { $data = $_SESSION['RegData']; }
 
-
-	/*
 	echo "<!--\n";
 	foreach( $data as $key => $value ) 
 	{
 		echo "$key => '$value'\n";
 	}
 	echo "-->\n";
-	*/
 
 /*
  * ToDo:
@@ -46,7 +43,7 @@
 
 <script language="javascript" type="text/javascript">
 
-	var proposalCnt = <?php echo $config->proposalCnt;?>;
+	var proposalCnt = <?php echo $proposalCnt;?>;
 
 
 	/*
@@ -96,7 +93,7 @@
 
 		// Open preloaded presentor or proposal sections
 <?php
-	for ($idx=1; $idx <= $config->proposalCnt ; ++ $idx)
+	for ($idx=1; $idx <= $proposalCnt ; ++ $idx)
 	{
 		if (IsSet($data["Title$idx"]) && $data["Title$idx"] != "")
 		{
@@ -122,7 +119,7 @@
 	echo "<!-- Dump requiredFields as fieldList -->\n";
 	echo "var fieldList = Array(\n";
 	$char='';
-	foreach( $config->requiredFields as $fieldInfo )
+	foreach( $requiredFields as $fieldInfo ) 
 	{
 		echo "\t${char}{ name:'$fieldInfo[0]', desc:'$fieldInfo[1]', type:'$fieldInfo[2]' }\n";
 		$char = ',';
@@ -131,7 +128,7 @@
 
 	echo "var proposalFields = Array(\n";
 	$char='';
-	foreach( $config->proposalFields as $propfld )
+	foreach( $proposalFields as $propfld )
 	{
 		echo "\t${char}{ name:'$propfld[0]', desc:'$propfld[1]', type:'$propfld[2]' }\n";
 		$char = ',';
@@ -141,7 +138,7 @@
 
 	echo "var proposalList = Array(\n";
 	$char2='';
-	foreach( $config->proposalList as $proposalFields )
+	foreach( $proposalList as $proposalFields )
 	{
 		echo "\t${char2}Array(\n";
 		$char='';
@@ -167,7 +164,7 @@
 </head>
 
 <body link="#0000FF" vlink="#FF0000" alink="#000088" onload="start()" >
-<div class="image"><img src="<?php echo $config->image;?>"/></div>
+<div class="image"><img src="<?php echo $image;?>"/></div>
 <div id="JSREQUIRED">
 This page requires that JavaScript be active!
 </div>
@@ -176,8 +173,8 @@ Warning: This page does not currently work correctly with Internet Explorer. <br
 If you are using that browser you'll need<br>
 to try a different one until we resolve the issue.<br>
 </div>
-<h1><?php echo "$config->eventDate";?><br>
-<?php echo $config->year;?>&nbsp;
+<h1><?php echo "$eventDate";?><br>
+<?php echo $year;?>&nbsp;
 PRESENTER &amp; PERFORMER APPLICATION PAGE<br>
 </h1>
 <br>
@@ -191,13 +188,13 @@ PRESENTER &amp; PERFORMER APPLICATION PAGE<br>
 ?>
 
 <form method="post" action="proposalSubmit.php">
-<input type="hidden" name="eventCode" value="<?php echo $config->eventCode;?>"/>
+<input type="hidden" name="eventCode" value="<?php echo $eventCode;?>"/>
 
-<?php if ($config->eventCode=='FOL') { ?>
+<?php if ($eventCode=='FOL') { ?>
 <p class="c9">
-A Feast of Lights has a focus on the "winter" interests of a traditional community: stories and songs, healing, ritual, dance, symbols and traditional spiritual practices. We prioritize offerings on these themes and on topics of environmentalism and service.  If you are interested in presenting a workshop or performance, leading a discussion or a ritual or hosting a children’s activity, please fill out the form below and return it to us by <?php echo $deadLine?>. The first round of program decisions will be made at that time. Proposals received after that date may be chosen if any slots remain available. Please order your proposals in order of your preference. We are most likely to select only one of your proposals and will not accept more than two.  Thank you
+A Feast of Lights has a focus on the "winter" interests of a traditional community: stories and songs, healing, ritual, dance, symbols and traditional spiritual practices. We prioritize offerings on these themes and on topics of environmentalism and service.  If you are interested in presenting a workshop or performance, leading a discussion or a ritual or hosting a children's activity, please fill out the form below and return it to us by <?php echo $deadLine?>. The first round of program decisions will be made at that time. Proposals received after that date may be chosen if any slots remain available. Please order your proposals in order of your preference. We are most likely to select only one of your proposals and will not accept more than two.  Thank you
 </p>
-<?php } else if ($config->eventCode=='ROS') { ?>
+<?php } else if ($eventCode=='ROS') { ?>
 
 <p class="c9">
 The Rites of Spring program is centered around pagan and earth-centered culture, community and spiritual practices.
@@ -210,7 +207,7 @@ If you are interested in presenting a workshop or performance, leading a discuss
 <?php } else {?>
 <p class="c9">If you are interested in presenting a workshop or performance, leading a
 discussion or affinity group, leading a ritual or children&#8217;s
-activity, please fill out the form below and return it to us by <span class="c8"><?php echo $config->deadLine;?></span>.
+activity, please fill out the form below and return it to us by <span class="c8"><?php echo $deadLine;?></span>. 
 Program decisions will be made at that time. Please order your
 proposals in order of your preference; we cannot guarantee more than
 one presentation slot per person.</p>
@@ -266,7 +263,7 @@ function TextField($name, $size=50, $maxLength=50, $onblur='na', $class='na')
 	/* 
 	 * Arrival 
 	 */
-	if (in_array('Arrival',$config->enableFields)) {
+	if (in_array('Arrival',$enableFields)) { 
 ?>
 <div class="q">When are you arriving at Rites this year?
 <div class="choice">
@@ -289,7 +286,7 @@ function TextField($name, $size=50, $maxLength=50, $onblur='na', $class='na')
 	/* 
 	 * NbrOfTime 
 	 */
-	if (in_array('NbrOfTimes',$config->enableFields)) {
+	if (in_array('NbrOfTimes',$enableFields)) { 
 ?>
 <div class="q">How many times have you attended Rites of Spring?
 <div class="choice">
@@ -413,9 +410,9 @@ You have <input readonly="readonly" name="countdown<?php echo $idx;?>" size="3" 
 
   <li class="c6">Please fill in <span class="c8">ALL</span> information for each proposal. Leaving out any information may result in your proposal not being accepted. </li>
   
-  <li class="c6">Please edit your proposals to <?php echo $config->proposalTextSize;?> characters or less (approximately 100 words).</li>
+  <li class="c6">Please edit your proposals to <?php echo $proposalTextSize;?> characters or less (approximately 100 words).</li>
   
-<?php if ($config->eventCode=='ROS') { ?>
+<?php if ($eventCode=='ROS') { ?>
 
   <li class="c6">If your proposal is for a multi-session <span class="c8">intensive</span>, 
 	please title each session using the <span class="c8">same name</span>, 
@@ -478,7 +475,7 @@ function RadioList($fieldName, $dataArray, $fldIdx)
  *
 */
 
-for ($idx=1; $idx <= $config->proposalCnt ; ++ $idx)
+for ($idx=1; $idx <= $proposalCnt ; ++ $idx)
 {
 ?>
 <hr style="width: 100%; height: 2px;">
@@ -507,20 +504,20 @@ for ($idx=1; $idx <= $config->proposalCnt ; ++ $idx)
 </div></div>
 
 <?php 
-	if ($config->eventCode=='ROS') {
-		RadioListOption('What TYPE of presentation is this (select one)?', 'PresentationType', $config->PresentationType, $idx);
+	if ($eventCode=='ROS') { 
+		RadioListOption('What TYPE of presentation is this (select one)?', 'PresentationType', $PresentationType, $idx);
 	}
-	RadioListOption('This workshop is appropriate for (select one):','TargetAudience', $config->Audience, $idx);
-	RadioListOption('What is the AGE LEVEL appropriate for attendees of this workshop (select one)?','Age', $config->AgeGroup, $idx);
-	if ($config->eventCode=='ROS') {
-		RadioListOption('TIME preferences (select one)','TimePreference', $config->TimePreference, $idx);
-		RadioListOption('SPACE requirements (select one):','SpacePreference', $config->SpacePreference, $idx);
+	RadioListOption('This workshop is appropriate for (select one):','TargetAudience', $Audience, $idx);
+	RadioListOption('What is the AGE LEVEL appropriate for attendees of this workshop (select one)?','Age', $AgeGroup, $idx);
+	if ($eventCode=='ROS') { 
+		RadioListOption('TIME preferences (select one)','TimePreference', $TimePreference, $idx);
+		RadioListOption('SPACE requirements (select one):','SpacePreference', $SpacePreference, $idx);
 	}
-	RadioListOption('Is there a limit to the number of attendees for this presentation?', 'Limit', $config->AttendeeLimit, $idx);
-	RadioListOption('Is there a materials fee to attend this presentation?','Fee', $config->MaterialsFee, $idx);
+	RadioListOption('Is there a limit to the number of attendees for this presentation?', 'Limit', $AttendeeLimit, $idx);
+	RadioListOption('Is there a materials fee to attend this presentation?','Fee', $MaterialsFee, $idx);
 ?>
 <div class="q">Description of Presentation:
-<div class="choice">(You may copy and paste into this box,the limit is still <?php echo $config->proposalTextSize;?>  characters.)
+<div class="choice">(You may copy and paste into this box,the limit is still <?php echo $proposalTextSize;?>  characters.)
 If you wish us to include special formatting in the program, use the following:<br>
 For <i>italics</i>, put an underscore before and after the words to be italicized: _italic words_<br>
 For <b>boldface</b> put a star before and after the words to be bolded: *boldface words*<br>

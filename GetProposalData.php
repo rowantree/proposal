@@ -9,11 +9,20 @@ function FixString($string)
 
 function LoadData($dataFile)
 {
+    $event_code = 'FOL';
+    $event_year = 2017;
+
     $data = new stdClass();
+    $data->event_code = $event_code;
+    $data->event_year = $event_year;
+
+
 
     $db = OpenPDO();
 
-    $stmt = $db->query("SELECT event_id FROM event WHERE event_code='ROS' and event_year=2016");
+
+
+    $stmt = $db->query("SELECT event_id FROM event WHERE event_code='$event_code' and event_year=$event_year");
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     $eventId = $row['event_id'];
 
@@ -27,6 +36,7 @@ function LoadData($dataFile)
         ,p.biography
         ,p.when_arriving
         ,p.last_attended
+        ,p.entry_date
     FROM proposal p
     WHERE event_id=$eventId
     ORDER BY p.legal_name
@@ -34,7 +44,6 @@ function LoadData($dataFile)
 
     $stmt = $db->query($sql);
 
-    $data = new stdClass();
     $data->proposals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
@@ -63,6 +72,7 @@ function LoadData($dataFile)
 ";
     $stmt = $db->query($sql);
     $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $data->details = $details;
     foreach($details as $detail)
     {
         $proposalId = $detail['proposal_id'];
