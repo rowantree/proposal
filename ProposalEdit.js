@@ -47,7 +47,17 @@
 					{
 						scope.UserMsg = "Data has been loaded: " + response.data.status;
 						scope.proposalData = response.data.proposals;
-						scope.proposalDetails = response.data.details;
+
+						//scope.proposalDetails = response.data.details;
+						scope.proposalDetails = [];
+						for( var idx=0, len=scope.proposalData.length; idx < len; ++idx)
+						{
+							for( var j=0, l=scope.proposalData[idx].presentations.length; j < l; ++j)
+							{
+								scope.proposalDetails.push( scope.proposalData[idx].presentations[j] );
+							}
+						}
+
 						scope.event_year = response.data.event_year;
 						scope.event_code = response.data.event_code;
 					}
@@ -59,7 +69,7 @@
 		}
 
 		this.ShowFlag = 'NONE';
-		this.ShowMenu = 'PEOPLE';
+		this.ShowMenu = 'PROGRAM';
 		this.Reload();
 	});
 

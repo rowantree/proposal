@@ -12,6 +12,8 @@ function LoadData($dataFile)
     $event_code = 'FOL';
     $event_year = 2017;
 
+	TraceMsg("LoadData $event_code $event_year");
+
     $data = new stdClass();
     $data->event_code = $event_code;
     $data->event_year = $event_year;
@@ -20,11 +22,10 @@ function LoadData($dataFile)
 
     $db = OpenPDO();
 
-
-
     $stmt = $db->query("SELECT event_id FROM event WHERE event_code='$event_code' and event_year=$event_year");
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     $eventId = $row['event_id'];
+	TraceMsg("EventId is $eventId");
 
     $sql = "SELECT p.proposal_id
         ,p.event_id
@@ -43,8 +44,18 @@ function LoadData($dataFile)
     ";
 
     $stmt = $db->query($sql);
+    TraceMsg($sql);
+	if (!$stmt)
+	{
+	    error_log( "SQL Error:" . json_encode($db->errorInfo()) );
+        $data->msg = 'SQL Error';
+        $data->status = 'ERROR';
+        echo json_encode($data);
+        return;
+	}
 
     $data->proposals = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	TraceMsg("Proposal data loaded");
 
 
     $sql = "SELECT
@@ -71,8 +82,15 @@ function LoadData($dataFile)
     WHERE p.event_id=$eventId;
 ";
     $stmt = $db->query($sql);
+    if (!$stmt)
+    {
+        error_log( "SQL Error:" . json_encode($db->errorInfo()) );
+        $data->msg = 'SQL Error';
+        $data->status = 'ERROR';
+        echo json_encode($data);
+        return;
+    }
     $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $data->details = $details;
     foreach($details as $detail)
     {
         $proposalId = $detail['proposal_id'];
@@ -102,6 +120,14 @@ function LoadData($dataFile)
         INNER JOIN proposal p on pp.proposal_id = p.proposal_id
     WHERE p.event_id=$eventId;";
     $stmt = $db->query($sql);
+    if (!$stmt)
+    {
+        error_log( "SQL Error:" . json_encode($db->errorInfo()) );
+        $data->msg = 'SQL Error';
+        $data->status = 'ERROR';
+        echo json_encode($data);
+        return;
+    }
 
     $people = $stmt->fetchAll(PDO::FETCH_ASSOC);
     foreach($people as $person)
@@ -210,6 +236,10 @@ function LoadData($dataFile)
 
     }
 }
+function TraceMsg($msg)
+{
+	error_log( date('[ymd-His]') . ':' .$msg . "\n", 3, "trace.log"); 
+}
 
 $dataFile = "data/ROS_2016_proposal.csv";
-@LoadData($dataFile);
+LoadData($dataFile);
