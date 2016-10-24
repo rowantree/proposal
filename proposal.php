@@ -195,7 +195,22 @@ PRESENTER &amp; PERFORMER APPLICATION PAGE<br>
 
 <?php if ($config->eventCode=='FOL') { ?>
 <p class="c9">
-A Feast of Lights has a focus on the "winter" interests of a traditional community: stories and songs, healing, ritual, dance, symbols and traditional spiritual practices. We prioritize offerings on these themes and on topics of environmentalism and service.  If you are interested in presenting a workshop or performance, leading a discussion or a ritual or hosting a children’s activity, please fill out the form below and return it to us by <?php echo $deadLine?>. The first round of program decisions will be made at that time. Proposals received after that date may be chosen if any slots remain available. Please order your proposals in order of your preference. We are most likely to select only one of your proposals and will not accept more than two.  Thank you
+A Feast of Lights will feature programs with several important themes this year:
+    <ul>
+<li>Culture/traditions, healing, divination, makers/crafts, arts/music, spiritual practice and activism/service.</li>
+<li>In our selection process, we will prioritize offerings on these topics for adults, children and families.</li>
+<li>Panels or performances with 3-4 members are welcome and can be included using this same form.</li>
+    </ul>
+
+If you are interested in presenting a workshop or performance,
+leading a discussion or a ritual or hosting an activity for children,
+please complete the form below and return it to us by <?php echo $config->deadLine?>.
+The first round of program decisions will be made at that time.
+Proposals received after that date may be chosen if any slots remain available.
+Please order your proposals in order of your preference.
+Since this is only a weekend event, we are most likely to select only one of your proposals and will not accept more than two.
+Thank you.
+
 </p>
 <?php } else if ($config->eventCode=='ROS') { ?>
 
@@ -204,7 +219,7 @@ The Rites of Spring program is centered around pagan and earth-centered culture,
 We prioritize offerings on these themes: rituals from different traditions, connecting with our natural physical environment, specific spiritual practices, musical and artistic endeavors, hands-on creative activities and the practical applications of pagan values in the world - through service, lifestyle choices or activism.
 </p>
 <p class="c9">
-If you are interested in presenting a workshop or performance, leading a discussion or a ritual or hosting a children’s activity, please fill out the form below and return it to us by <?php echo $deadLine?>.  The first round of program decisions will be made by April 1.  Proposals received after the deadline may still be selected if any slots remain available.  All decisions will be made by May 1.  Please list your proposals in order of your preference. We are most likely to select only one of your proposals and will not accept more than two unless the third is a program specifically for children or families. Thank you.  
+If you are interested in presenting a workshop or performance, leading a discussion or a ritual or hosting a children’s activity, please fill out the form below and return it to us by <?php echo $config->deadLine?>.  The first round of program decisions will be made by April 1.  Proposals received after the deadline may still be selected if any slots remain available.  All decisions will be made by May 1.  Please list your proposals in order of your preference. We are most likely to select only one of your proposals and will not accept more than two unless the third is a program specifically for children or families. Thank you.
 </p>
 
 <?php } else {?>
@@ -276,7 +291,26 @@ function TextField($name, $size=50, $maxLength=50, $onblur='na', $class='na')
 <label><input name="Arrival" value="Fri" type="radio">Friday eve</label><br>
 </div></div>
 <br>
-<?php } ?>
+<?php
+    }
+    if (in_array('Available',$config->enableFields)) {
+?>
+    <div class="q">When are you available at Feast of Lights this year?
+        <div class="choice">
+            <label><input name="AvailFri3" type="checkbox">Friday (after 3pm)</label><br>
+            <label><input name="AvailFri8" type="checkbox">Friday (after 8pm)</label><br>
+            <label><input name="AvailSat"  type="checkbox">Saturday</label><br>
+            <label><input name="AvailSun"  type="checkbox">Sunday (until 3pm)</label><br>
+        </div>
+        Comment:
+        <?php TextField('available',100,100);?>
+    </div>
+    <br>
+
+<?php
+    }
+?>
+
 
 <div class="q">Please list any days and times during the event when you are UNABLE to present.
 <div class="choice">

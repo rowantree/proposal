@@ -109,10 +109,25 @@
                             <div class="col-md-2">Email</div>
                             <div class="col-md-10">{{reg.ShowData.Proposal.email_address}}</div>
                         </div>
+
                         <div class="row">
                             <div class="col-md-2">Phone</div>
                             <div class="col-md-10">{{reg.ShowData.Proposal.telephone_number}}</div>
                         </div>
+
+
+                        <div class="row">
+                            <div class="col-md-2">Availability</div>
+                            <div class="col-md-10">
+                                <div Style="display: inline;" ng-show="reg.ShowData.Proposal.AvailFri3==1">Friday After 3&nbsp;</div>
+                                <div Style="display: inline;" ng-show="reg.ShowData.Proposal.AvailFri8==1">Friday After 8&nbsp;</div>
+                                <div Style="display: inline;" ng-show="reg.ShowData.Proposal.AvailSat==1">Saturday&nbsp;</div>
+                                <div Style="display: inline;" ng-show="reg.ShowData.Proposal.AvailSun==1">Sunday&nbsp;</div>
+                                {{reg.ShowData.Proposal.available}}
+                            </div>
+                        </div>
+
+
                         <div class="row">
                             <div class="col-md-2">Entry Date</div>
                             <div class="col-md-10">{{reg.ShowData.Proposal.entry_date}}</div>

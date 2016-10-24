@@ -54,7 +54,7 @@ function SetConfig()
 	$config->emailNotifyList = "meadwizard@gmail.com, chris@lafond.us, darthen@yahoo.com";
 	$config->emailNotifyList = "meadwizard@gmail.com, darthen@yahoo.com, sarah.twichell@gmail.com";
 
-    $config->emailNotifyList = "meadwizard@gmail.com";
+    //$config->emailNotifyList = "meadwizard@gmail.com";
 
 	/*
 	 * Note: the field list array elements are
@@ -71,7 +71,9 @@ function SetConfig()
 		);
 	}
 	else {
-		$config->enableFields = Array();
+		$config->enableFields = Array(
+			'Available'
+		);
 	}
 
 	$config->rosFields = Array();
