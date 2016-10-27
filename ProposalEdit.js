@@ -52,9 +52,12 @@
 						scope.proposalDetails = [];
 						for( var idx=0, len=scope.proposalData.length; idx < len; ++idx)
 						{
-							for( var j=0, l=scope.proposalData[idx].presentations.length; j < l; ++j)
+							if ( 'presentations' in scope.proposalData[idx] )
 							{
-								scope.proposalDetails.push( scope.proposalData[idx].presentations[j] );
+								for (var j = 0, l = scope.proposalData[idx].presentations.length; j < l; ++j)
+								{
+									scope.proposalDetails.push(scope.proposalData[idx].presentations[j]);
+								}
 							}
 						}
 

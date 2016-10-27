@@ -9,8 +9,8 @@ function FixString($string)
 
 function LoadData($dataFile)
 {
-    $event_code = 'FOL';
-    $event_year = 2017;
+    $event_code = 'ROS';
+    $event_year = 2016;
 
 	TraceMsg("LoadData $event_code $event_year");
 
@@ -21,6 +21,17 @@ function LoadData($dataFile)
 
 
     $db = OpenPDO();
+
+    $sql = "SELECT e.event_code, e.event_year, count(*) proposal_count FROM proposal p INNER JOIN event e on e.event_id = p.event_id GROUP BY e.event_code, e.event_year";
+    $stmt = $db->query($sql);
+    $data->summary = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $sql = "SELECT e.event_code, e.event_year, count(*) detail_count FROM proposal_detail pd INNER JOIN proposal p on p.proposal_id = pd.proposal_id INNER JOIN event e on e.event_id = p.event_id GROUP BY e.event_code, e.event_year";
+    $stmt = $db->query($sql);
+    $data->summary_detail = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+
 
     $stmt = $db->query("SELECT event_id FROM event WHERE event_code='$event_code' and event_year=$event_year");
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -81,6 +92,7 @@ function LoadData($dataFile)
     INNER JOIN proposal p ON pd.proposal_id = p.proposal_id
     WHERE p.event_id=$eventId;
 ";
+    TraceMsg($sql);
     $stmt = $db->query($sql);
     if (!$stmt)
     {
@@ -91,6 +103,7 @@ function LoadData($dataFile)
         return;
     }
     $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    TraceMsg("Loaded " . count($details) . " detail records");
     foreach($details as $detail)
     {
         $proposalId = $detail['proposal_id'];
