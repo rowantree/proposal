@@ -31,6 +31,18 @@ CREATE TABLE `proposal` (
   PRIMARY KEY (`proposal_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8;
 
+
+ALTER TABLE `proposal` ADD `AvailFri3` BOOL NOT NULL ;
+ALTER TABLE `proposal` ADD `AvailFri8` BOOL NOT NULL ;
+ALTER TABLE `proposal` ADD `AvailSat` BOOL NOT NULL ;
+ALTER TABLE `proposal` ADD `AvailSun` BOOL NOT NULL ;
+ALTER TABLE `proposal` ADD `available` varchar(128) NULL ;
+
+ALTER TABLE `proposal_detail` ADD scheudle_location VARCHAR(64);
+ALTER TABLE `proposal_detail` ADD schedule_time VARCHAR(64);
+
+
+
 CREATE TABLE `proposal_detail` (
   `proposal_detail_id` int(11) NOT NULL AUTO_INCREMENT,
   `proposal_id` int(11) NOT NULL,

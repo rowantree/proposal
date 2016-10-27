@@ -24,6 +24,8 @@
                 <div class="col-md-2 scrollable-menu scrollbar" role="menu">
                     <button class="btn" ng-click="reg.ShowMenu='PEOPLE'">People</button>
                     <button class="btn" ng-click="reg.ShowMenu='PROGRAM'">Program</button>
+                    <button class="btn" ng-click="reg.ShowMenu='LOCATION'">Location</button>
+                    <button class="btn" ng-click="reg.ShowMenu='TIME'">Time</button>
 
                     <div ng-show="reg.ShowMenu=='PEOPLE'" ng-repeat="data in reg.proposalData" style="padding: 2px 2px 2px 2px;">
                         <button class="btn-block text-left" ng-click="reg.ShowProposal($index)">{{data.legal_name}}</button>
@@ -33,6 +35,13 @@
                         <button class="btn-block text-left" ng-click="reg.ShowDetail(data.proposal_detail_id)">{{data.title}}</button>
                     </div>
 
+                    <div ng-show="reg.ShowMenu=='LOCATION'" ng-repeat="(location, data) in reg.locations" style="padding: 2px 2px 2px 2px;">
+                        <button class="btn-block text-left" ng-click="reg.ShowLocation(data)">{{location}}</button>
+                    </div>
+
+                    <div ng-show="reg.ShowMenu=='TIME'" ng-repeat="(index, data) in reg.times" style="padding: 2px 2px 2px 2px;">
+                        <button class="btn-block text-left" ng-click="reg.ShowTime(data)">{{index}}</button>
+                    </div>
 
                 </div>
 
@@ -42,6 +51,23 @@
                         <div class="col-md-12 alert-success">Event:{{reg.event_code}} {{reg.event_year}} {{reg.UserMsg}}</div>
                     </div>
 
+                    <div ng-show="reg.ShowFlag=='LOCATION'" ng-repeat="data in reg.ShowData">
+                        <!-- Each data element is a presentation detail -->
+                        <div class="row">
+                            <div class="col-md-2">{{data.schedule_time}}</div>
+                            <div class="col-md-10"><button class="btn-block text-left" ng-click="reg.ShowDetail(data.proposal_detail_id)">{{data.title}}</button></div>
+                        </div>
+                    </div>
+
+                    <div ng-show="reg.ShowFlag=='TIME'" ng-repeat="data in reg.ShowData">
+                        <!-- Each data element is a presentation detail -->
+                        <div class="row">
+                            <div class="col-md-2">{{data.schedule_location}}</div>
+                            <div class="col-md-10"><button class="btn-block text-left" ng-click="reg.ShowDetail(data.proposal_detail_id)">{{data.title}}</button></div>
+                        </div>
+                    </div>
+
+
                     <div ng-show="reg.ShowFlag=='DETAIL'">
                         <div class="row">
                             <div class="col-md-2"><b>Title</b></div>
@@ -50,12 +76,12 @@
 
                         <div class="row">
                             <div class="col-md-2">Location</div>
-                            <div class="col-md-10"><input class="form-control" type="text" ng-model="reg.ShowData.location"></div>
+                            <div class="col-md-10"><input class="form-control" type="text" ng-model="reg.ShowData.schedule_location"></div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-2">Time</div>
-                            <div class="col-md-10"><input class="form-control" type="text" ng-model="reg.ShowData.time"></div>
+                            <div class="col-md-10"><input class="form-control" type="text" ng-model="reg.ShowData.schedule_time"></div>
                         </div>
 
                         <div class="row">
@@ -94,6 +120,12 @@
                             <div class="col-md-8">{{reg.ShowData.limit}}</div>
                             <div class="col-md-2">{{reg.ShowData.limit_detail}}</div>
                         </div>
+
+
+                        <div class="row">
+                            <div class="col-md-2"><button ng-click="reg.SaveDetail(reg.ShowData)">Save</button></div>
+                        </div>
+
 
                         <div class="row"><div class="col-md-12"><hr></div></div>
 

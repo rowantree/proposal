@@ -7,7 +7,7 @@ function FixString($string)
     return mb_convert_encoding($string, "UTF-8", "Windows-1252");
 }
 
-function LoadData($dataFile)
+function LoadData()
 {
     $event_code = 'ROS';
     $event_year = 2016;
@@ -18,22 +18,24 @@ function LoadData($dataFile)
     $data->event_code = $event_code;
     $data->event_year = $event_year;
 
-
-
     $db = OpenPDO();
 
     $sql = "SELECT e.event_code, e.event_year, count(*) proposal_count FROM proposal p INNER JOIN event e on e.event_id = p.event_id GROUP BY e.event_code, e.event_year";
-    $stmt = $db->query($sql);
+    //$stmt = $db->query($sql);
+    $stmt = ExecuteQuery($db, $sql, $data);
     $data->summary = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     $sql = "SELECT e.event_code, e.event_year, count(*) detail_count FROM proposal_detail pd INNER JOIN proposal p on p.proposal_id = pd.proposal_id INNER JOIN event e on e.event_id = p.event_id GROUP BY e.event_code, e.event_year";
-    $stmt = $db->query($sql);
+    //$stmt = $db->query($sql);
+    $stmt = ExecuteQuery($db, $sql, $data);
     $data->summary_detail = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 
 
 
-    $stmt = $db->query("SELECT event_id FROM event WHERE event_code='$event_code' and event_year=$event_year");
+    //$stmt = $db->query("SELECT event_id FROM event WHERE event_code='$event_code' and event_year=$event_year");
+    $stmt = ExecuteQuery($db, "SELECT event_id FROM event WHERE event_code='$event_code' and event_year=$event_year", $data);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     $eventId = $row['event_id'];
 	TraceMsg("EventId is $eventId");
@@ -59,17 +61,8 @@ function LoadData($dataFile)
     ORDER BY p.legal_name
     ";
 
-    $stmt = $db->query($sql);
-    TraceMsg($sql);
-	if (!$stmt)
-	{
-	    error_log( "SQL Error:" . json_encode($db->errorInfo()) );
-        $data->msg = 'SQL Error';
-        $data->status = 'ERROR';
-        echo json_encode($data);
-        return;
-	}
-
+    //$stmt = $db->query($sql);
+    $stmt = ExecuteQuery($db, $sql, $data);
     $data->proposals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	TraceMsg("Proposal data loaded");
 
@@ -91,22 +84,14 @@ function LoadData($dataFile)
         pd.participant_limit_detail,
         pd.fee,
         pd.fee_detail,
-        pd.presentation
-        ,'Somewhere' as location
+        pd.presentation,
+        pd.schedule_location,
+        pd.schedule_time
     FROM proposal_detail pd
     INNER JOIN proposal p ON pd.proposal_id = p.proposal_id
     WHERE p.event_id=$eventId;
 ";
-    TraceMsg($sql);
-    $stmt = $db->query($sql);
-    if (!$stmt)
-    {
-        error_log( "SQL Error:" . json_encode($db->errorInfo()) );
-        $data->msg = 'SQL Error';
-        $data->status = 'ERROR';
-        echo json_encode($data);
-        return;
-    }
+    $stmt = ExecuteQuery($db, $sql, $data);
     $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
     TraceMsg("Loaded " . count($details) . " detail records");
     foreach($details as $detail)
@@ -137,16 +122,8 @@ function LoadData($dataFile)
     FROM proposal_person pp
         INNER JOIN proposal p on pp.proposal_id = p.proposal_id
     WHERE p.event_id=$eventId;";
-    $stmt = $db->query($sql);
-    if (!$stmt)
-    {
-        error_log( "SQL Error:" . json_encode($db->errorInfo()) );
-        $data->msg = 'SQL Error';
-        $data->status = 'ERROR';
-        echo json_encode($data);
-        return;
-    }
 
+    $stmt = ExecuteQuery($db, $sql, $data);
     $people = $stmt->fetchAll(PDO::FETCH_ASSOC);
     foreach($people as $person)
     {
@@ -173,78 +150,6 @@ function LoadData($dataFile)
 
     return;
 
-    if (($handle = fopen($dataFile, "r")) !== FALSE)
-    {
-        $fieldList = ['Legal Name', 'Program Name', 'Email Address', 'Telephone Number', 'Unavailable Times', 'Biography', 'When arriving', 'Attended Rites of Spring'];
-        $presentationFieldList = ['Title', 'Presentation Type', 'Presentation Type Other', 'Target Audience', 'Age', 'Age Other', 'Time Preference', 'Time Preference Other', 'Space Preference', 'Space Preference Other', 'Limit', 'Limit Detail', 'Fee', 'Fee Detail', 'Presentation'];
-        $header = fgetcsv($handle);
-
-        $proposals = [];
-
-        while (($row = fgetcsv($handle)) != FALSE)
-        {
-            $proposal = new stdClass();
-
-            foreach ($header as $i => $header_i)
-            {
-                if ($header_i != '')
-                {
-                    $fieldName = str_replace(' ', '', $header_i);
-                    $row_data[$fieldName] = $row[$i];
-                }
-            }
-
-            foreach ($fieldList as $fieldName)
-            {
-                $fieldName = str_replace(' ', '', $fieldName);
-                $proposal->$fieldName = FixString($row_data[$fieldName]);
-            }
-
-            $otherPeople = [];
-            for ($i = 1; $i < 3; ++$i)
-            {
-                $legalName = $row_data["LegalName$i"];
-                if (strlen($legalName) > 0)
-                {
-                    $person = new stdClass();
-                    $person->LegalName = $legalName;
-                    $person->ProgramName = FixString($row_data["ProgramName$i"]);
-                    $person->Bio = FixString($row_data["Bio$i"]);
-                    array_push($otherPeople, $person);
-                }
-            }
-            $proposal->OtherPeople = $otherPeople;
-
-            $presentations = [];
-            for ($i = 1; $i < 4; ++$i)
-            {
-                $title = $row_data["Title$i"];
-                if (strlen($title) > 0)
-                {
-                    $presentation = new stdClass();
-                    foreach ($presentationFieldList as $fieldName)
-                    {
-                        $fieldName = str_replace(' ', '', $fieldName);
-                        $presentation->$fieldName = FixString($row_data["$fieldName$i"]);
-                    }
-                    array_push($presentations, $presentation);
-                }
-            }
-            $proposal->Presentations = $presentations;
-
-
-            array_push($proposals, $proposal);
-        }
-
-        $data->status = 'SUCCESS';
-        $data->info = 'Info';
-        $data->proposals = $proposals;
-    } else
-    {
-        $data->status = 'FAILURE';
-        $data->msg = "Could not open file: $dataFile";
-    }
-
     try
     {
         echo json_encode($data);
@@ -253,11 +158,30 @@ function LoadData($dataFile)
         echo "Caught Exception:", $e->getMessage(), "<br>";
 
     }
+
 }
 function TraceMsg($msg)
 {
 	error_log( date('[ymd-His]') . ':' .$msg . "\n", 3, "trace.log"); 
 }
 
-$dataFile = "data/ROS_2016_proposal.csv";
-LoadData($dataFile);
+function ExecuteQuery($db, $sql, $data)
+{
+    TraceMsg($sql);
+    $result = $db->query($sql);
+    if (!$result)
+    {
+        TraceMsg("SQL Failure");
+        TraceMsg("SQL Failure: " . var_export($sql, TRUE));
+        TraceMsg(var_export($db->errorInfo(), TRUE));
+        $data->msg = 'SQL Error';
+        $data->status = 'ERROR';
+        echo json_encode($data);
+
+        exit(1);
+    }
+    return $result;
+}
+
+TraceMsg("GetProposalData");
+LoadData();

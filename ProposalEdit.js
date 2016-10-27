@@ -32,6 +32,42 @@
 
 		}
 
+		this.ShowLocation = function(locationData)
+		{
+			this.ShowFlag = 'LOCATION';
+			this.ShowData = locationData;
+		}
+
+		this.ShowTime = function(locationData)
+		{
+			this.ShowFlag = 'TIME';
+			this.ShowData = locationData;
+		}
+
+		this.SaveDetail = function(detailData)
+		{
+			this.UserMsg = "Saving Data";
+			var scope = this;
+
+			var newData = {};
+			angular.extend(newData, detailData);
+			newData.Proposal = null;
+			var res = $http.post('SaveChanges.php', angular.toJson(newData));
+
+
+			res.success(function(data, status, headers, config)
+			{
+				scope.UserMsg = "Success";
+			});
+			res.error(function(data, status, headers, config)
+			{
+				scope.UserMsg = "Error";
+			});
+
+			this.ScanData();
+
+		}
+
 
 		this.Reload = function()
 		{
@@ -61,6 +97,9 @@
 							}
 						}
 
+
+						scope.ScanData();
+
 						scope.event_year = response.data.event_year;
 						scope.event_code = response.data.event_code;
 					}
@@ -69,6 +108,38 @@
 						scope.UserMsg = "Data failed to load:" + response.data.msg;
 					}
 				});
+		}
+
+		this.ScanData = function()
+		{
+			this.locations = {};
+			this.times = {};
+			if ( this.proposalData )
+			{
+				for (var idx = 0, len = this.proposalData.length; idx < len; ++idx)
+				{
+					if ('presentations' in this.proposalData[idx])
+					{
+						for (var j = 0, l = this.proposalData[idx].presentations.length; j < l; ++j)
+						{
+							var details = this.proposalData[idx].presentations[j];
+
+							if (!(details.schedule_location in this.locations))
+							{
+								this.locations[details.schedule_location] = [];
+							}
+							this.locations[details.schedule_location].push(details);
+
+							if (!(details.schedule_time in this.times))
+							{
+								this.times[details.schedule_time] = [];
+							}
+							this.times[details.schedule_time].push(details);
+						}
+					}
+				}
+			}
+
 		}
 
 		this.ShowFlag = 'NONE';
