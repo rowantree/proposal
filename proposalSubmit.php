@@ -79,8 +79,10 @@ try
 
 
 	$stmt = $db->prepare("INSERT INTO proposal
-        (event_id, legal_name, program_name, email_address, telephone_number, unavailable_times, biography, when_arriving, last_attended, entry_date ) 
-        VALUES (:event_id, :legal_name, :program_name, :email_address, :telephone_number, :unavailable_times, :biography, :when_arriving, :last_attended, CURRENT_TIMESTAMP )");
+        (event_id, legal_name, program_name, email_address, telephone_number, unavailable_times, biography, when_arriving, last_attended, 
+        AvailFri3, AvailFri8, AvailSat, AvailSun, available, entry_date ) 
+        VALUES (:event_id, :legal_name, :program_name, :email_address, :telephone_number, :unavailable_times, :biography, :when_arriving, :last_attended, 
+        :AvailFri3, :AvailFri8, :AvailSat, :AvailSun, :available, CURRENT_TIMESTAMP )");
 
 	$stmt->bindValue(':event_id', $eventId);
 	$stmt->bindValue(':legal_name', isset($_POST["LegalName"]) ? $_POST["LegalName"] : null);
@@ -91,6 +93,12 @@ try
     $stmt->bindValue(':biography', isset($_POST["biography"]) ? $_POST["biography"] : null);
     $stmt->bindValue(':when_arriving', isset($_POST["Arrival"]) ? $_POST["Arrival"] : null);
     $stmt->bindValue(':last_attended',isset($_POST["NumberOfRites"]) ? $_POST["NumberOfRites"] : null);
+
+	$stmt->bindValue(':AvailFri3', isset($_POST["AvailFri3"]) ?  ($_POST["AvailFri3"] == 'on' ? 1 : 0 ) : 0);
+	$stmt->bindValue(':AvailFri8', isset($_POST["AvailFri8"]) ?  ($_POST["AvailFri8"] == 'on' ? 1 : 0 ) : 0);
+	$stmt->bindValue(':AvailSat', isset($_POST["AvailSat"]) ?  ($_POST["AvailSat"] == 'on' ? 1 : 0 ) : 0);
+	$stmt->bindValue(':AvailSun', isset($_POST["AvailSun"]) ?  ($_POST["AvailSun"] == 'on' ? 1 : 0 ) : 0);
+    $stmt->bindValue(':available',isset($_POST["available"]) ? $_POST["available"] : null);
 
     ExecutePDO($stmt);
     $proposalId = $db->lastInsertId();
@@ -136,10 +144,14 @@ try
             $stmt->bindValue(':time_preference_other', isset($_POST["TimePreference${idx}Other"]) ?  $_POST["TimePreference${idx}Other"] : null);
             $stmt->bindValue(':space_preference', isset($_POST["SpacePreference${idx}"]) ?  $_POST["SpacePreference${idx}"] : null);
             $stmt->bindValue(':space_preference_other', isset($_POST["SpacePreference${idx}Other"]) ?  $_POST["SpacePreference${idx}Other"] : null);
-            $stmt->bindValue(':participant_limit', isset($_POST["Limit${idx}"]) ?  ($_POST["Limit${idx}"] == 'yes' ? 1 : 0) : 0);
-            $stmt->bindValue(':participant_limit_detail', isset($_POST["Limit${idx}Other"]) ?  $_POST["Limit${idx}Other"] : null);
-            $stmt->bindValue(':fee', isset($_POST["Fee${idx}"]) ?  ($_POST["Fee${idx}"] == 'yes' ? 1 : 0 ) : 0);
-            $stmt->bindValue(':fee_detail', isset($_POST["Fee${idx}Other"]) ?  $_POST["Fee${idx}Other"] : null);
+
+            $limit = isset($_POST["Limit${idx}"]) ?  ($_POST["Limit${idx}"] == 'Other' ? 1 : 0) : 0;
+            $stmt->bindValue(':participant_limit', $limit );
+            $stmt->bindValue(':participant_limit_detail', $limit && isset($_POST["Limit${idx}Other"]) ?  $_POST["Limit${idx}Other"] : null);
+
+			$fee = isset($_POST["Fee${idx}"]) ? ($_POST["Fee${idx}"] == 'Other' ? 1 : 0 ) : 0;
+            $stmt->bindValue(':fee', $fee );
+            $stmt->bindValue(':fee_detail', $fee && isset($_POST["Fee${idx}Other"]) ?  $_POST["Fee${idx}Other"] : null);
 
 			ExecutePDO($stmt);
 		}
@@ -283,7 +295,8 @@ function ExecutePDO($stmt)
         error_log("SQL Failure: " . var_export($stmt, TRUE));
         error_log(var_export($stmt->errorInfo(), TRUE));
         echo "<span style='color:red'>Database Error!</span>";
-        throw new Exception("SQL Failure:" . var_export($stmt->errorInfo(), TRUE));
+        //throw new Exception("SQL Failure:" . var_export($stmt->errorInfo(), TRUE));
+        exit(1);
     }
     return $result;
 }

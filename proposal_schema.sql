@@ -6,6 +6,9 @@ CREATE TABLE `event` (
   PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+drop table proposal_detail;
+drop table proposal_person;
+drop table proposal;
 
 
 CREATE TABLE `proposal` (
@@ -18,6 +21,11 @@ CREATE TABLE `proposal` (
   `unavailable_times` varchar(128) NULL,
   `biography` text NOT NULL,
   `when_arriving` varchar(128) NULL,
+  `AvailFri3` BOOL NOT NULL ,
+  `AvailFri8` BOOL NOT NULL ,
+  `AvailSat` BOOL NOT NULL ,
+  `AvailSun` BOOL NOT NULL ,
+  `available` varchar(128) NULL ,
   `last_attended` varchar(128) NULL,
   `entry_date` DATETIME NULL,
   PRIMARY KEY (`proposal_id`)
@@ -56,3 +64,8 @@ CREATE TABLE `proposal_person` (
   KEY `fk_proposal_person_proposal` (`proposal_id`),
   CONSTRAINT `fk_proposal_person_proposal` FOREIGN KEY (`proposal_id`) REFERENCES `proposal` (`proposal_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+
+
+
+
+

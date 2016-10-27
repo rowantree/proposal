@@ -48,6 +48,11 @@ function LoadData($dataFile)
         ,p.biography
         ,p.when_arriving
         ,p.last_attended
+        ,p.AvailFri3
+        ,p.AvailFri8
+        ,p.AvailSat
+        ,p.AvailSun
+        ,p.available
         ,p.entry_date
     FROM proposal p
     WHERE event_id=$eventId
