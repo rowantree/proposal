@@ -18,7 +18,6 @@
 	<div ng-app="ProposalEditApp">
 		<div ng-controller="RegController as reg">
 
-
             <div class="row">
 
                 <div class="col-md-2 scrollable-menu scrollbar" role="menu">
@@ -36,11 +35,11 @@
                     </div>
 
                     <div ng-show="reg.ShowMenu=='LOCATION'" ng-repeat="(location, data) in reg.locations" style="padding: 2px 2px 2px 2px;">
-                        <button class="btn-block text-left" ng-click="reg.ShowLocation(data)">{{location}}</button>
+                        <button class="btn-block text-left" ng-click="reg.ShowLocation(data,location)">{{location}}</button>
                     </div>
 
                     <div ng-show="reg.ShowMenu=='TIME'" ng-repeat="(index, data) in reg.times" style="padding: 2px 2px 2px 2px;">
-                        <button class="btn-block text-left" ng-click="reg.ShowTime(data)">{{index}}</button>
+                        <button class="btn-block text-left" ng-click="reg.ShowTime(data,index)">{{index}}</button>
                     </div>
 
                 </div>
@@ -76,7 +75,9 @@
 
                         <div class="row">
                             <div class="col-md-2">Location</div>
-                            <div class="col-md-10"><input class="form-control" type="text" ng-model="reg.ShowData.schedule_location"></div>
+                            <div class="col-md-10">
+                                <select class="form-control" ng-model="reg.ShowData.schedule_location" ng-options="item for item in reg.available_locations"></select>
+                            </div>
                         </div>
 
                         <div class="row">
@@ -216,22 +217,22 @@
 
                             <div class="row">
                                 <div class="col-md-2"><b>Title</b></div>
-                                <div class="col-md-10"><input class="form-control" type="text" ng-model="data.title"></div>
+                                <div class="col-md-10"><button class="btn-block text-left" ng-click="reg.ShowDetail(data.proposal_detail_id)">{{data.title}}</button></div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-2">Location</div>
-                                <div class="col-md-10"><input class="form-control" type="text" ng-model="data.location"></div>
+                                <div class="col-md-10">{{data.schedule_location}}</div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-2">Time</div>
-                                <div class="col-md-10"><input class="form-control" type="text" ng-model="data.time"></div>
+                                <div class="col-md-10">{{data.schedule_time}}</div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-2">Description</div>
-                                <div class="col-md-10"><textarea class="form-control" ng-model="data.presentation"></textarea></div>
+                                <div class="col-md-10">{{data.presentation}}</div>
                             </div>
                             <div class="row">
                                 <div class="col-md-2">Type</div>

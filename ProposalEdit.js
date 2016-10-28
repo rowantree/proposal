@@ -9,6 +9,7 @@
 		{
 			this.ShowData = this.proposalData[$index];
 			this.ShowFlag = 'FULL';
+			this.UserMsg = "Showing Selected Proposal";
 		}
 
 		this.ShowDetail = function(proposal_detail_id)
@@ -30,18 +31,21 @@
 				}
 			}
 
+
 		}
 
-		this.ShowLocation = function(locationData)
+		this.ShowLocation = function(locationData, scheduleLocation)
 		{
 			this.ShowFlag = 'LOCATION';
 			this.ShowData = locationData;
+			this.UserMsg = "Showing Proposals Assigned To " + scheduleLocation;
 		}
 
-		this.ShowTime = function(locationData)
+		this.ShowTime = function(locationData, scheduleTime)
 		{
 			this.ShowFlag = 'TIME';
 			this.ShowData = locationData;
+			this.UserMsg = "Showing Proposals Assigned To " + scheduleTime;
 		}
 
 		this.SaveDetail = function(detailData)
@@ -142,9 +146,14 @@
 
 		}
 
+		this.available_locations = ['Building A', 'Building B', 'Building C'];
+		this.schedule_location = 'Building A';
+
 		this.ShowFlag = 'NONE';
 		this.ShowMenu = 'PROGRAM';
 		this.Reload();
+
+
 	});
 
 })(window.angular);
