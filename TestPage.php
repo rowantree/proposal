@@ -1,5 +1,6 @@
 <?php
 // Just a quick edit to do something with GIF
+// Added this line on the master
 	session_start();
 
 	$data = array();
