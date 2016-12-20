@@ -1,5 +1,6 @@
 <?php
 // Just a quick edit to do something with GIF
+// On the testing branch we add this line
 	session_start();
 
 	$data = array();
