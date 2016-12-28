@@ -37,7 +37,7 @@
  * Add field requirements - must answer 'most' fields
  * Remote Coundown fields from result file.
  *
- * $Id: proposal.php 98 2016-11-27 17:07:31Z stephen $
+ * $Id: proposal.php 90 2016-02-28 23:09:38Z stephen $
  */
 ?>
 	
@@ -311,9 +311,10 @@ function TextField($name, $size=50, $maxLength=50, $onblur='na', $class='na')
     }
 ?>
 
-<div class="q">Please tell us of any additional time restrictions you have for your presentation.
+
+<div class="q">Please list any days and times during the event when you are UNABLE to present.
 <div class="choice">
-	<i>(If you have no limitations please write "none.")</i>
+	<i>(If you have no time restrictions, please write "none.")</i>
 	<br>
 	<?php TextField('unavailable',100,100);?>
 </div></div>
