@@ -33,10 +33,11 @@ try
 catch (Exception $e)
 {
     TraceMsg("Caught Exception:" . $e->getMessage());
+    error_log("SaveChanges: Exception Report", 0);
 }
 
 function TraceMsg($msg)
 {
-    error_log( date('[ymd-His]') . ':' .$msg . "\n", 3, "trace.log");
+    error_log( date('[ymd-His]') . ':SaveChanges:' .$msg . "\n", 3, "trace.log");
 }
 

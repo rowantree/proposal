@@ -159,3 +159,5 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+/error_log
+*.php.orig

@@ -9,8 +9,8 @@ function FixString($string)
 
 function LoadData()
 {
-    $event_code = 'ROS';
-    $event_year = 2016;
+    $event_code = 'FOL';
+    $event_year = 2017;
 
 	TraceMsg("LoadData $event_code $event_year");
 
@@ -19,6 +19,14 @@ function LoadData()
     $data->event_year = $event_year;
 
     $db = OpenPDO();
+
+    $sql = "SELECT LocationId, LocationName FROM location ORDER BY LocationId";
+    $stmt = ExecuteQuery($db, $sql, $data);
+    $data->locations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $sql = "SELECT EventTimeId, EventTimeName FROM event_time ORDER BY EventTimeId";
+    $stmt = ExecuteQuery($db, $sql, $data);
+    $data->event_times = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $sql = "SELECT e.event_code, e.event_year, count(*) proposal_count FROM proposal p INNER JOIN event e on e.event_id = p.event_id GROUP BY e.event_code, e.event_year";
     //$stmt = $db->query($sql);
@@ -167,7 +175,7 @@ function TraceMsg($msg)
 
 function ExecuteQuery($db, $sql, $data)
 {
-    TraceMsg($sql);
+    //TraceMsg($sql);
     $result = $db->query($sql);
     if (!$result)
     {
