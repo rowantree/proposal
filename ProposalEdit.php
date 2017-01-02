@@ -20,35 +20,82 @@
 
             <div class="row">
 
+                <!--
+                    Left Hand Menu
+                -->
                 <div class="col-md-2 scrollable-menu scrollbar" role="menu">
-                    <button class="btn" ng-click="reg.ShowMenu='PEOPLE'">People</button>
-                    <button class="btn" ng-click="reg.ShowMenu='PROGRAM'">Program</button>
-                    <button class="btn" ng-click="reg.ShowMenu='LOCATION'">Location</button>
-                    <button class="btn" ng-click="reg.ShowMenu='TIME'">Time</button>
+                    <button class="btn-block btn-primary" ng-click="reg.ShowMenu='People'">Show People</button>
+                    <button class="btn-block btn-primary" ng-click="reg.ShowMenu='Program'">Show Program</button>
+                    <button class="btn-block btn-primary" ng-click="reg.ShowMenu='Location'">Show Location</button>
+                    <button class="btn-block btn-primary" ng-click="reg.ShowMenu='Time'">Show Time</button>
 
-                    <div ng-show="reg.ShowMenu=='PEOPLE'" ng-repeat="data in reg.proposalData" style="padding: 2px 2px 2px 2px;">
-                        <button class="btn-block text-left" ng-click="reg.ShowProposal($index)">{{data.legal_name}}</button>
+                    <div class="text-center bg-success"> {{reg.ShowMenu}} </div>
+
+                    <div ng-show="reg.ShowMenu=='People'" ng-repeat="data in reg.proposalData" style="padding: 2px 2px 2px 2px;">
+                        <button class="btn-block text-left btn-link" ng-click="reg.ShowProposal($index)">{{data.legal_name}}</button>
                     </div>
 
-                    <div ng-show="reg.ShowMenu=='PROGRAM'" ng-repeat="data in reg.proposalDetails | orderBy: 'title'" style="padding: 2px 2px 2px 2px;">
-                        <button class="btn-block text-left" ng-click="reg.ShowDetail(data.proposal_detail_id)">{{data.title}}</button>
+                    <div ng-show="reg.ShowMenu=='Program'" ng-repeat="data in reg.proposalDetails | orderBy: 'title'" style="padding: 2px 2px 2px 2px;">
+                        <button class="btn-block text-left btn-link" ng-click="reg.ShowDetail(data.proposal_detail_id)">{{data.title}}</button>
                     </div>
 
-                    <div ng-show="reg.ShowMenu=='LOCATION'" ng-repeat="(location, data) in reg.locations" style="padding: 2px 2px 2px 2px;">
-                        <button class="btn-block text-left" ng-click="reg.ShowLocation(data,location)">{{location}}</button>
+                    <div ng-show="reg.ShowMenu=='Location'" ng-repeat="(location, data) in reg.locations" style="padding: 2px 2px 2px 2px;">
+                        <button class="btn-block text-left btn-link" ng-click="reg.ShowLocation(data,location)">{{location}}</button>
                     </div>
 
-                    <div ng-show="reg.ShowMenu=='TIME'" ng-repeat="(index, data) in reg.times" style="padding: 2px 2px 2px 2px;">
-                        <button class="btn-block text-left" ng-click="reg.ShowTime(data,index)">{{index}}</button>
+                    <div ng-show="reg.ShowMenu=='Time'" ng-repeat="(index, data) in reg.times" style="padding: 2px 2px 2px 2px;">
+                        <button class="btn-block text-left btn-link" ng-click="reg.ShowTime(data,index)">{{index}}</button>
                     </div>
+
+                    <button class="btn-block btn-info" ng-click="reg.ShowFlag='EDIT_LOCATIONS'">Edit Locations</button>
+                    <button class="btn-block btn-info" ng-click="reg.ShowFlag='EDIT_TIMES'">Edit Times</button>
 
                 </div>
+
+                <!--
+                    Right Hand Data Panel
+                -->
 
                 <div class="col-md-10">
 
                     <div class="row">
-                        <div class="col-md-12 alert-success">Event:{{reg.event_code}} {{reg.event_year}} {{reg.UserMsg}}</div>
+                        <div class="alert-success">Event:{{reg.event_code}} {{reg.event_year}} {{reg.UserMsg}}</div>
+                        <div class="alert-success">{{reg.ShowFlag}}</div>
                     </div>
+
+
+
+                    <div ng-show="reg.ShowFlag=='EDIT_LOCATIONS'">
+                        <h2>Location Editor</h2>
+                        <button class="btn-info" ng-click="reg.EditLocation={LocationId:0, LocationName:'New'}">New</button>
+                        <div ng-repeat="data in reg.availableLocations">
+                            <div class="row" ng-if="data.LocationId!=null">
+                                <button ng-click="reg.EditLocation = {LocationId:data.LocationId, LocationName:data.LocationName}">Edit</button>
+                                {{data.LocationName}}
+                            </div>
+                        </div>
+                        <div ng-show="reg.EditLocation.LocationId!=null">
+                        #{{reg.EditLocation.LocationId}}<Input Type="text" Name="LocationName" ng-model="reg.EditLocation.LocationName"><button ng-click="reg.SaveLocation()">Save</button>
+                        </div>
+                    </div>
+
+                    <div ng-show="reg.ShowFlag=='EDIT_TIMES'">
+                        <h2>Times Editor</h2>
+                        <button class="btn-info" ng-click="reg.EditEventTime={EventTimeId:0, EventTimeName:'New'}">New</button>
+
+                        <div ng-repeat="data in reg.availableTimes">
+                            <div class="row" ng-if="data.EventTimeId!=null">
+                                <button ng-click="reg.EditEventTime = {EventTimeId:data.EventTimeId, EventTimeName:data.EventTimeName}">Edit</button>
+                                {{data.EventTimeName}}
+                            </div>
+                        </div>
+
+                        <div ng-show="reg.EditEventTime.EventTimeId!=null">
+                            #{{reg.EditEventTime.EventTimeId}}<Input Type="text" Name="EventTimeName" ng-model="reg.EditEventTime.EventTimeName"><button ng-click="reg.SaveEventTime()">Save</button>
+                        </div>
+
+                    </div>
+
 
                     <div ng-show="reg.ShowFlag=='LOCATION'" ng-repeat="data in reg.ShowData">
                         <!-- Each data element is a presentation detail -->
@@ -61,7 +108,7 @@
                     <div ng-show="reg.ShowFlag=='TIME'" ng-repeat="data in reg.ShowData">
                         <!-- Each data element is a presentation detail -->
                         <div class="row">
-                            <div class="col-md-2">{{data.schedule_location}}</div>
+                            <div class="col-md-2">{{reg.availableLocations[data.schedule_location].LocationName}}</div>
                             <div class="col-md-10"><button class="btn-block text-left" ng-click="reg.ShowDetail(data.proposal_detail_id)">{{data.title}}</button></div>
                         </div>
                     </div>
@@ -76,13 +123,15 @@
                         <div class="row">
                             <div class="col-md-2">Location</div>
                             <div class="col-md-10">
-                                <select class="form-control" ng-model="reg.ShowData.schedule_location" ng-options="item for item in reg.available_locations"></select>
+                                <select class="form-control" ng-model="reg.ShowData.schedule_location" ng-options="item.LocationId as item.LocationName for item in reg.availableLocations"></select>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-2">Time</div>
-                            <div class="col-md-10"><input class="form-control" type="text" ng-model="reg.ShowData.schedule_time"></div>
+                            <div class="col-md-10">
+                                <select class="form-control" ng-model="reg.ShowData.schedule_time" ng-options="item.EventTimeId as item.EventTimeName for item in reg.availableTimes"></select>
+                            </div>
                         </div>
 
                         <div class="row">

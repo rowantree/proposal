@@ -5,6 +5,45 @@
 
     myApp.controller('RegController', function ($http)
     {
+
+		this.SaveLocation = function()
+		{
+			var scope = this;
+			var res = $http.post('SaveLocation.php', angular.toJson(this.EditLocation));
+
+			res.success(function(data, status, headers, config)
+			{
+				scope.UserMsg = "Success";
+				scope.EditLocation = {LocationId:null, LocationName:''};
+                scope.Reload();
+			});
+			res.error(function(data, status, headers, config)
+			{
+				scope.UserMsg = "Error";
+			});
+
+			this.ScanData();
+		}
+
+		this.SaveEventTime = function()
+		{
+			var scope = this;
+			var res = $http.post('SaveEventTime.php', angular.toJson(this.EditEventTime));
+
+			res.success(function(data, status, headers, config)
+			{
+				scope.UserMsg = "Success";
+				scope.EditEventTime = {EventTimeId:null, EventTimeName:''};
+				scope.Reload();
+			});
+			res.error(function(data, status, headers, config)
+			{
+				scope.UserMsg = "Error";
+			});
+
+			this.ScanData();
+		}
+
 		this.ShowProposal = function($index)
 		{
 			this.ShowData = this.proposalData[$index];
@@ -88,6 +127,20 @@
 						scope.UserMsg = "Data has been loaded: " + response.data.status;
 						scope.proposalData = response.data.proposals;
 
+						scope.availableLocations = {};
+						scope.availableLocations[null] = {LocationId:null, LocationName:'Unspecified'};
+                        for (var idx=0; idx < response.data.locations.length; ++idx)
+						{
+							scope.availableLocations[response.data.locations[idx].LocationId] = response.data.locations[idx];
+						}
+
+						scope.availableTimes = {};
+						scope.availableTimes[null] = {EventTimeId:null, EventTimeName:'Unspecified'};
+						for (var idx=0; idx < response.data.event_times.length; ++idx)
+						{
+							scope.availableTimes[response.data.event_times[idx].EventTimeId] = response.data.event_times[idx];
+						}
+
 						//scope.proposalDetails = response.data.details;
 						scope.proposalDetails = [];
 						for( var idx=0, len=scope.proposalData.length; idx < len; ++idx)
@@ -128,17 +181,40 @@
 						{
 							var details = this.proposalData[idx].presentations[j];
 
-							if (!(details.schedule_location in this.locations))
+							/*
+							var locationName = 'Unspecified';
+							for (var k = 0; k < this.availableLocations.length; ++k )
 							{
-								this.locations[details.schedule_location] = [];
+								if ( this.availableLocations[k].LocationId == details.schedule_location )
+								{
+									locationName = this.availableLocations[k].LocationName;
+                                    break;
+								}
 							}
-							this.locations[details.schedule_location].push(details);
+							*/
 
-							if (!(details.schedule_time in this.times))
+							var locationName = 'Unspecified';
+							if ( details.schedule_location != null )
 							{
-								this.times[details.schedule_time] = [];
+								locationName = this.availableLocations[details.schedule_location].LocationName;
 							}
-							this.times[details.schedule_time].push(details);
+
+                            if (!(locationName in this.locations))
+                            {
+                                this.locations[locationName] = [];
+                            }
+                            this.locations[locationName].push(details);
+
+							var timeName = 'Unspecified';
+							if ( details.schedule_time != null )
+							{
+								timeName = this.availableTimes[details.schedule_time].EventTimeName;
+							}
+							if (!(timeName in this.times))
+							{
+								this.times[timeName] = [];
+							}
+							this.times[timeName].push(details);
 						}
 					}
 				}
@@ -146,11 +222,8 @@
 
 		}
 
-		this.available_locations = ['Building A', 'Building B', 'Building C'];
-		this.schedule_location = 'Building A';
-
-		this.ShowFlag = 'NONE';
-		this.ShowMenu = 'PROGRAM';
+		this.ShowFlag = 'None';
+		this.ShowMenu = 'Program';
 		this.Reload();
 
 
