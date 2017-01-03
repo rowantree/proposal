@@ -59,8 +59,7 @@
                 <div class="col-md-10">
 
                     <div class="row">
-                        <div class="alert-success">Event:{{reg.event_code}} {{reg.event_year}} {{reg.UserMsg}}</div>
-                        <div class="alert-success">{{reg.ShowFlag}}</div>
+                        <div class="alert-success">Event:{{reg.event_code}} {{reg.event_year}} {{reg.UserMsg}}    [{{reg.ShowFlag}}]</div>
                     </div>
 
 
@@ -100,7 +99,7 @@
                     <div ng-show="reg.ShowFlag=='LOCATION'" ng-repeat="data in reg.ShowData">
                         <!-- Each data element is a presentation detail -->
                         <div class="row">
-                            <div class="col-md-2">{{data.schedule_time}}</div>
+                            <div class="col-md-2">{{reg.availableTimes[data.schedule_time].EventTimeName}}</div>
                             <div class="col-md-10"><button class="btn-block text-left" ng-click="reg.ShowDetail(data.proposal_detail_id)">{{data.title}}</button></div>
                         </div>
                     </div>
