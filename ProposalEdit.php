@@ -35,8 +35,8 @@
                         <button class="btn-block text-left btn-link" ng-click="reg.ShowProposal($index)">{{data.legal_name}}</button>
                     </div>
 
-                    <div ng-show="reg.ShowMenu=='Program'" ng-repeat="data in reg.proposalDetails | orderBy: 'title'" style="padding: 2px 2px 2px 2px;">
-                        <button class="btn-block text-left btn-link" ng-click="reg.ShowDetail(data.proposal_detail_id)">{{data.title}}</button>
+                    <div ng-show="reg.ShowMenu=='Program'" ng-repeat="data in reg.proposalDetails | orderBy: 'proposal_detail_id'" style="padding: 2px 2px 2px 2px;">
+                        <button class="btn-block text-left btn-link" ng-click="reg.ShowDetail(data.proposal_detail_id)">[{{('000'+data.proposal_detail_id).slice(-3)}}] {{data.title}}</button>
                     </div>
 
                     <div ng-show="reg.ShowMenu=='Location'" ng-repeat="(location, data) in reg.locations" style="padding: 2px 2px 2px 2px;">
@@ -100,7 +100,7 @@
                         <!-- Each data element is a presentation detail -->
                         <div class="row">
                             <div class="col-md-2">{{reg.availableTimes[data.schedule_time].EventTimeName}}</div>
-                            <div class="col-md-10"><button class="btn-block text-left" ng-click="reg.ShowDetail(data.proposal_detail_id)">{{data.title}}</button></div>
+                            <div class="col-md-10"><button class="btn-block text-left" ng-click="reg.ShowDetail(data.proposal_detail_id)">[{{('000'+data.proposal_detail_id).slice(-3)}}] {{data.title}}</button></div>
                         </div>
                     </div>
 
@@ -108,7 +108,7 @@
                         <!-- Each data element is a presentation detail -->
                         <div class="row">
                             <div class="col-md-2">{{reg.availableLocations[data.schedule_location].LocationName}}</div>
-                            <div class="col-md-10"><button class="btn-block text-left" ng-click="reg.ShowDetail(data.proposal_detail_id)">{{data.title}}</button></div>
+                            <div class="col-md-10"><button class="btn-block text-left" ng-click="reg.ShowDetail(data.proposal_detail_id)">[{{('000'+data.proposal_detail_id).slice(-3)}}] {{data.title}}</button></div>
                         </div>
                     </div>
 
@@ -136,6 +136,10 @@
                         <div class="row">
                             <div class="col-md-2">Description</div>
                             <div class="col-md-10"><textarea class="form-control" ng-model="reg.ShowData.presentation"></textarea></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2">Id</div>
+                            <div class="col-md-10">#{{reg.ShowData.proposal_detail_id}}</div>
                         </div>
                         <div class="row">
                             <div class="col-md-2">Type</div>
