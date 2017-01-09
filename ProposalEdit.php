@@ -35,8 +35,13 @@
                         <button class="btn-block text-left btn-link" ng-click="reg.ShowProposal($index)">{{data.legal_name}}</button>
                     </div>
 
-                    <div ng-show="reg.ShowMenu=='Program'" ng-repeat="data in reg.proposalDetails | orderBy: 'proposal_detail_id'" style="padding: 2px 2px 2px 2px;">
-                        <button class="btn-block text-left btn-link" ng-click="reg.ShowDetail(data.proposal_detail_id)">[{{('000'+data.proposal_detail_id).slice(-3)}}] {{data.title}}</button>
+                    <div ng-show="reg.ShowMenu=='Program'">
+                        Sort by:
+                        <button class="btn-info" ng-click="sortType='proposal_detail_id'">Id</button>
+                        <button class="btn-info" ng-click="sortType='title'">Name</button>
+                        <div ng-repeat="data in reg.proposalDetails | orderBy: sortType" style="padding: 2px 2px 2px 2px;">
+                            <button class="btn-block text-left btn-link" ng-click="reg.ShowDetail(data.proposal_detail_id)">[{{('000'+data.proposal_detail_id).slice(-3)}}] {{data.title}}</button>
+                        </div>
                     </div>
 
                     <div ng-show="reg.ShowMenu=='Location'" ng-repeat="(location, data) in reg.locations" style="padding: 2px 2px 2px 2px;">
