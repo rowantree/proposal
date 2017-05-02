@@ -24,6 +24,7 @@
                     Left Hand Menu
                 -->
                 <div class="col-md-2 scrollable-menu scrollbar" role="menu">
+                    <button class="btn-block btn-primary" ng-click="reg.ShowFlag='GRID'">Show Grid</button>
                     <button class="btn-block btn-primary" ng-click="reg.ShowMenu='People'">Show People</button>
                     <button class="btn-block btn-primary" ng-click="reg.ShowMenu='Program'">Show Program</button>
                     <button class="btn-block btn-primary" ng-click="reg.ShowMenu='Location'">Show Location</button>
@@ -44,12 +45,12 @@
                         </div>
                     </div>
 
-                    <div ng-show="reg.ShowMenu=='Location'" ng-repeat="(location, data) in reg.locations" style="padding: 2px 2px 2px 2px;">
-                        <button class="btn-block text-left btn-link" ng-click="reg.ShowLocation(data,location)">{{location}}</button>
+                    <div ng-show="reg.ShowMenu=='Location'" ng-repeat="location in reg.GetKeys(reg.locations)" style="padding: 2px 2px 2px 2px;">
+                        <button class="btn-block text-left btn-link" ng-click="reg.ShowLocation(reg.locations[location],location)">{{location}}</button>
                     </div>
 
-                    <div ng-show="reg.ShowMenu=='Time'" ng-repeat="(index, data) in reg.times" style="padding: 2px 2px 2px 2px;">
-                        <button class="btn-block text-left btn-link" ng-click="reg.ShowTime(data,index)">{{index}}</button>
+                    <div ng-show="reg.ShowMenu=='Time'" ng-repeat="index in reg.GetKeys(reg.times)" style="padding: 2px 2px 2px 2px;">
+                        <button class="btn-block text-left btn-link" ng-click="reg.ShowTime(reg.times[index],index)">{{reg.times[index].name}}</button>
                     </div>
 
                     <button class="btn-block btn-info" ng-click="reg.ShowFlag='EDIT_LOCATIONS'">Edit Locations</button>
@@ -67,12 +68,33 @@
                         <div class="alert-success">Event:{{reg.event_code}} {{reg.event_year}} {{reg.UserMsg}}    [{{reg.ShowFlag}}]</div>
                     </div>
 
+                    <div ng-show="reg.ShowFlag=='GRID'">
+                        <table border="1">
+                            <tr>
+                                <td></td>
+                                <td ng-repeat="location in reg.GetKeys(reg.locations)" style="padding: 2px 2px 2px 2px;">
+                                    {{location}}
+                                </td>
+                            </tr>
+                            <tr ng-repeat="timeSort in reg.GetKeys(reg.times)" style="padding: 2px 2px 2px 2px;">
+                                <td>{{reg.times[timeSort].name}}</td>
+                                <td ng-repeat="location in reg.GetKeys(reg.locations)">
+                                    <span ng-repeat="propDetails in reg.times[timeSort].proposals | filter : { schedule_location : reg.locations[location].locationId } ">
+                                        #{{propDetails.proposal_detail_id}} {{propDetails.title}}
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
 
 
+                    <!--
+                        Edit Locations
+                    -->
                     <div ng-show="reg.ShowFlag=='EDIT_LOCATIONS'">
                         <h2>Location Editor</h2>
                         <button class="btn-info" ng-click="reg.EditLocation={LocationId:0, LocationName:'New'}">New</button>
-                        <div ng-repeat="data in reg.availableLocations">
+                        <div ng-repeat="data in reg.locationsByName">
                             <div class="row" ng-if="data.LocationId!=null">
                                 <button ng-click="reg.EditLocation = {LocationId:data.LocationId, LocationName:data.LocationName}">Edit</button>
                                 {{data.LocationName}}
@@ -83,25 +105,39 @@
                         </div>
                     </div>
 
+                    <!--
+                        Edit Times
+                    -->
                     <div ng-show="reg.ShowFlag=='EDIT_TIMES'">
                         <h2>Times Editor</h2>
                         <button class="btn-info" ng-click="reg.EditEventTime={EventTimeId:0, EventTimeName:'New'}">New</button>
 
-                        <div ng-repeat="data in reg.availableTimes">
-                            <div class="row" ng-if="data.EventTimeId!=null">
-                                <button ng-click="reg.EditEventTime = {EventTimeId:data.EventTimeId, EventTimeName:data.EventTimeName}">Edit</button>
-                                {{data.EventTimeName}}
+                        <div ng-repeat="item in reg.availableTimes | orderObjectBy:'EventTimeSort':false ">
+                            <div class="row" ng-if="item.EventTimeId!=null">
+                                <button ng-click="reg.EditEventTime = {
+                                    EventTimeId:item.EventTimeId,
+                                    EventTimeName:item.EventTimeName,
+                                    EventTimeSort:item.EventTimeSort
+                                }">Edit</button>
+                                {{item.EventTimeName}}
+                                [{{item.EventTimeSort}}]
                             </div>
                         </div>
 
                         <div ng-show="reg.EditEventTime.EventTimeId!=null">
-                            #{{reg.EditEventTime.EventTimeId}}<Input Type="text" Name="EventTimeName" ng-model="reg.EditEventTime.EventTimeName"><button ng-click="reg.SaveEventTime()">Save</button>
+                            #{{reg.EditEventTime.EventTimeId}}
+                            <Input Type="text" Name="EventTimeName" ng-model="reg.EditEventTime.EventTimeName">
+                            <Input Type="text" Name="EventTimeSort" ng-model="reg.EditEventTime.EventTimeSort">
+                            <button ng-click="reg.SaveEventTime()">Save</button>
                         </div>
 
                     </div>
 
 
-                    <div ng-show="reg.ShowFlag=='LOCATION'" ng-repeat="data in reg.ShowData">
+                    <!--
+                        List Locations
+                    -->
+                    <div ng-show="reg.ShowFlag=='LOCATION'" ng-repeat="data in reg.ShowData.proposals">
                         <!-- Each data element is a presentation detail -->
                         <div class="row">
                             <div class="col-md-2">{{reg.availableTimes[data.schedule_time].EventTimeName}}</div>
@@ -109,7 +145,10 @@
                         </div>
                     </div>
 
-                    <div ng-show="reg.ShowFlag=='TIME'" ng-repeat="data in reg.ShowData">
+                    <!--
+                        List Time
+                    -->
+                    <div ng-show="reg.ShowFlag=='TIME'" ng-repeat="data in reg.ShowData.proposals">
                         <!-- Each data element is a presentation detail -->
                         <div class="row">
                             <div class="col-md-2">{{reg.availableLocations[data.schedule_location].LocationName}}</div>
@@ -118,6 +157,9 @@
                     </div>
 
 
+                    <!--
+                        Details of selected presentation
+                    -->
                     <div ng-show="reg.ShowFlag=='DETAIL'">
                         <div class="row">
                             <div class="col-md-2"><b>Title</b></div>
@@ -127,14 +169,14 @@
                         <div class="row">
                             <div class="col-md-2">Location</div>
                             <div class="col-md-10">
-                                <select class="form-control" ng-model="reg.ShowData.schedule_location" ng-options="item.LocationId as item.LocationName for item in reg.availableLocations"></select>
+                                <select class="form-control" ng-model="reg.ShowData.schedule_location" ng-options="item.LocationId as item.LocationName for item in reg.locationsByName"></select>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-2">Time</div>
                             <div class="col-md-10">
-                                <select class="form-control" ng-model="reg.ShowData.schedule_time" ng-options="item.EventTimeId as item.EventTimeName for item in reg.availableTimes"></select>
+                                <select class="form-control" ng-model="reg.ShowData.schedule_time" ng-options="item.EventTimeId as item.EventTimeName for item in reg.availableTimes | orderObjectBy: 'EventTimeSort':false"></select>
                             </div>
                         </div>
 
@@ -178,10 +220,25 @@
                             <div class="col-md-8">{{reg.ShowData.limit}}</div>
                             <div class="col-md-2">{{reg.ShowData.limit_detail}}</div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-2">Equipment</div>
+                            <div class="col-md-10">{{reg.ShowData.equipment}}</div>
+                        </div>
 
 
                         <div class="row">
-                            <div class="col-md-2"><button ng-click="reg.SaveDetail(reg.ShowData)">Save</button></div>
+                            <div class="col-md-6">
+                                <div ng-show="reg.action=='none'">
+									<button ng-click="reg.SaveDetail(reg.ShowData)">Save</button>
+									<button ng-click="reg.action='DELETE'">Delete</button>
+									<button ng-click="reg.action='DUPLICATE'">Duplicate</button>
+								</div>
+                            </div>
+                            <div ng-show="reg.action!='none'" class="col-md-6">
+                            <button ng-click="reg.action='none'">Cancel</button>
+                            <button ng-click="reg.ProposalMaint(reg.ShowData, reg.action)">Confirm</button>
+                            {{reg.action}}
+                            </div>
                         </div>
 
 
@@ -279,12 +336,12 @@
 
                             <div class="row">
                                 <div class="col-md-2">Location</div>
-                                <div class="col-md-10">{{data.schedule_location}}</div>
+                                <div class="col-md-10">{{reg.availableLocations[data.schedule_location].LocationName}}</div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-2">Time</div>
-                                <div class="col-md-10">{{data.schedule_time}}</div>
+                                <div class="col-md-10">{{reg.availableTimes[data.schedule_time].EventTimeName}}</div>
                             </div>
 
                             <div class="row">
@@ -322,6 +379,10 @@
                                 <div class="col-md-2">Limit</div>
                                 <div class="col-md-8">{{data.limit}}</div>
                                 <div class="col-md-2">{{data.limit_detail}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">Equipment</div>
+                                <div class="col-md-10">{{data.equipment}}</div>
                             </div>
                         </div>
 

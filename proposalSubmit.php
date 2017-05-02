@@ -2,7 +2,7 @@
 
 	/*
 	 *
-	 * $Id: proposalSubmit.php 68 2016-02-28 22:10:19Z stephen $
+	 * $Id: proposalSubmit.php 100 2017-03-02 12:51:49Z stephen $
 	 *
 	 */
 	session_start();
@@ -13,22 +13,33 @@
 
 
 	// I don't think this block of code is needed
-	$data = array();
-	if (IsSet($_SESSION['RegData'])) { $data = $_SESSION['RegData']; }
-	foreach( $_POST as $key => $value ) 
-	{
-		$data[$key] = $value;
-	}
-	$_SESSION['RegData'] = $data;
+	$PostData = array();
+	if (IsSet($_SESSION['ProposalData'])) { $PostData = $_SESSION['ProposalData']; }
 
-	$userName = ISSET($_POST['LegalName']) ? $_POST['LegalName'] : 'Unknown';
+	if (ISSET($_POST['jsondata']))
+	{
+		$PostData = json_decode($_POST['jsondata'], true);
+		TraceMsg( "Reloaded from JSON Data" );
+	}
+	else 
+	{
+		foreach( $_POST as $key => $value ) 
+		{
+			$PostData[$key] = $value;
+		}
+		$_SESSION['ProposalData'] = $PostData;
+	}
+
+
+
+	$userName = ISSET($PostData['LegalName']) ? $PostData['LegalName'] : 'Unknown';
 	TraceMsg( "ProposalSubmit.php for $userName" );
 
 /*
 	$resp = recaptcha_check_answer ($privatekey,
 			$_SERVER["REMOTE_ADDR"],
-			$_POST["recaptcha_challenge_field"],
-			$_POST["recaptcha_response_field"]);
+			$PostData["recaptcha_challenge_field"],
+			$PostData["recaptcha_response_field"]);
 
 	if (!$resp->is_valid) 
 	{
@@ -46,10 +57,10 @@
 	$msg = "<style> td { font-size:12pt; } th { font-size:12pt; } </style>\n";
 	$msg .= "<html><table border=1>";
 
-	TraceMsg("ProposalSubmit:" . json_encode($_POST) );
+	TraceMsg("ProposalSubmit:" . json_encode($PostData) );
 /*
 	echo "<h2>Form Dump</h2>";
-	foreach( $_POST as $key => $value )
+	foreach( $PostData as $key => $value )
 	{
 		echo "$key=>$value<br>";
 	}
@@ -64,12 +75,13 @@ try
     $db = OpenPDO();
 
 	$stmt = $db->prepare("SELECT event_id FROM event WHERE event_code=:event_code AND event_year=:event_year");
+
 	$stmt->bindValue(':event_code', $config->eventCode);
 	$stmt->bindValue(':event_year', $config->year);
 	$result = ExecutePDO($stmt);
 	if ( !($row = $stmt->fetch(PDO::FETCH_ASSOC)) )
 	{
-		echo "I'm sorry but I could not identity the event code<br>";
+		echo "I'm sorry but I could not identity the event code: $config->eventCode $config->year<br>";
 		TraceMsg("Could not identify the event code for $config->eventCode $config->year");
 		error_log("Could not identify the event code for $config->eventCode $config->year");
 		exit;
@@ -85,20 +97,20 @@ try
         :AvailFri3, :AvailFri8, :AvailSat, :AvailSun, :available, CURRENT_TIMESTAMP )");
 
 	$stmt->bindValue(':event_id', $eventId);
-	$stmt->bindValue(':legal_name', isset($_POST["LegalName"]) ? $_POST["LegalName"] : null);
-    $stmt->bindValue(':program_name', isset($_POST["ProgramName"]) ? $_POST["ProgramName"] : null);
-    $stmt->bindValue(':email_address', isset($_POST["email"]) ? $_POST["email"] : null);
-    $stmt->bindValue(':telephone_number', isset($_POST["phone"]) ? $_POST["phone"] : null);
-    $stmt->bindValue(':unavailable_times', isset($_POST["unavailable"]) ? $_POST["unavailable"] : null);
-    $stmt->bindValue(':biography', isset($_POST["biography"]) ? $_POST["biography"] : null);
-    $stmt->bindValue(':when_arriving', isset($_POST["Arrival"]) ? $_POST["Arrival"] : null);
-    $stmt->bindValue(':last_attended',isset($_POST["NumberOfRites"]) ? $_POST["NumberOfRites"] : null);
+	$stmt->bindValue(':legal_name', isset($PostData["LegalName"]) ? $PostData["LegalName"] : null);
+    $stmt->bindValue(':program_name', isset($PostData["ProgramName"]) ? $PostData["ProgramName"] : null);
+    $stmt->bindValue(':email_address', isset($PostData["email"]) ? $PostData["email"] : null);
+    $stmt->bindValue(':telephone_number', isset($PostData["phone"]) ? $PostData["phone"] : null);
+    $stmt->bindValue(':unavailable_times', isset($PostData["unavailable"]) ? $PostData["unavailable"] : null);
+    $stmt->bindValue(':biography', isset($PostData["biography"]) ? $PostData["biography"] : null);
+    $stmt->bindValue(':when_arriving', isset($PostData["Arrival"]) ? $PostData["Arrival"] : null);
+    $stmt->bindValue(':last_attended',isset($PostData["NumberOfRites"]) ? $PostData["NumberOfRites"] : null);
 
-	$stmt->bindValue(':AvailFri3', isset($_POST["AvailFri3"]) ?  ($_POST["AvailFri3"] == 'on' ? 1 : 0 ) : 0);
-	$stmt->bindValue(':AvailFri8', isset($_POST["AvailFri8"]) ?  ($_POST["AvailFri8"] == 'on' ? 1 : 0 ) : 0);
-	$stmt->bindValue(':AvailSat', isset($_POST["AvailSat"]) ?  ($_POST["AvailSat"] == 'on' ? 1 : 0 ) : 0);
-	$stmt->bindValue(':AvailSun', isset($_POST["AvailSun"]) ?  ($_POST["AvailSun"] == 'on' ? 1 : 0 ) : 0);
-    $stmt->bindValue(':available',isset($_POST["available"]) ? $_POST["available"] : null);
+	$stmt->bindValue(':AvailFri3', isset($PostData["AvailFri3"]) ?  ($PostData["AvailFri3"] == 'on' ? 1 : 0 ) : 0);
+	$stmt->bindValue(':AvailFri8', isset($PostData["AvailFri8"]) ?  ($PostData["AvailFri8"] == 'on' ? 1 : 0 ) : 0);
+	$stmt->bindValue(':AvailSat', isset($PostData["AvailSat"]) ?  ($PostData["AvailSat"] == 'on' ? 1 : 0 ) : 0);
+	$stmt->bindValue(':AvailSun', isset($PostData["AvailSun"]) ?  ($PostData["AvailSun"] == 'on' ? 1 : 0 ) : 0);
+    $stmt->bindValue(':available',isset($PostData["available"]) ? $PostData["available"] : null);
 
     ExecutePDO($stmt);
     $proposalId = $db->lastInsertId();
@@ -109,49 +121,50 @@ try
 	for( $idx=1; $idx<4; ++$idx )
 	{
 		TraceMsg("Check for person $idx");
-		if ( isset($_POST["LegalName${idx}"]) && strlen($_POST["LegalName${idx}"]) > 0 )
+		if ( isset($PostData["LegalName${idx}"]) && strlen($PostData["LegalName${idx}"]) > 0 )
 		{
-			TraceMsg("Processing person $idx '" . $_POST["LegalName${idx}"] . "'");
+			TraceMsg("Processing person $idx '" . $PostData["LegalName${idx}"] . "'");
 			$stmt->bindValue(':proposal_id', $proposalId);
-			$stmt->bindValue(':legal_name', isset($_POST["LegalName${idx}"]) ?  $_POST["LegalName${idx}"] : null);
-			$stmt->bindValue(':program_name', isset($_POST["ProgramName${idx}"]) ?  $_POST["ProgramName${idx}"] : null);
-			$stmt->bindValue(':bio', isset($_POST["bio${idx}"]) ?  $_POST["bio${idx}"] : null);
+			$stmt->bindValue(':legal_name', isset($PostData["LegalName${idx}"]) ?  $PostData["LegalName${idx}"] : null);
+			$stmt->bindValue(':program_name', isset($PostData["ProgramName${idx}"]) ?  $PostData["ProgramName${idx}"] : null);
+			$stmt->bindValue(':bio', isset($PostData["bio${idx}"]) ?  $PostData["bio${idx}"] : null);
 			ExecutePDO($stmt);
 		}
 
 	}
 
 	$stmt = $db->prepare("INSERT INTO proposal_detail 
-    ( proposal_id, title, presentation_type, presentation_type_other, target_audience, age, age_other, time_preference, time_preference_other, space_preference, space_preference_other, participant_limit, participant_limit_detail, fee, fee_detail, presentation)
-    VALUES( :proposal_id, :title, :presentation_type, :presentation_type_other, :target_audience, :age, :age_other, :time_preference, :time_preference_other, :space_preference, :space_preference_other, :participant_limit, :participant_limit_detail, :fee, :fee_detail, :presentation )");
+    ( proposal_id, title, presentation_type, presentation_type_other, target_audience, age, age_other, time_preference, time_preference_other, space_preference, space_preference_other, participant_limit, participant_limit_detail, fee, fee_detail, presentation, equipment)
+    VALUES( :proposal_id, :title, :presentation_type, :presentation_type_other, :target_audience, :age, :age_other, :time_preference, :time_preference_other, :space_preference, :space_preference_other, :participant_limit, :participant_limit_detail, :fee, :fee_detail, :presentation, :equipment )");
 
 	for( $idx=1; $idx<5; ++$idx )
 	{
 	    TraceMsg("Check for details for proposal $idx");
-	    if ( isset($_POST["Title${idx}"]) && (strlen($_POST["Title${idx}"]) > 0 ))
+	    if ( isset($PostData["Title${idx}"]) && (strlen($PostData["Title${idx}"]) > 0 ))
 		{
-			TraceMsg("Processing Proposal $idx with title '" . $_POST["Title${idx}"] . "'");
+			TraceMsg("Processing Proposal $idx with title '" . $PostData["Title${idx}"] . "'");
             $stmt->bindValue(':proposal_id', $proposalId);
-            $stmt->bindValue(':title', $_POST["Title${idx}"]);
+            $stmt->bindValue(':title', $PostData["Title${idx}"]);
+            $stmt->bindValue(':equipment', $PostData["Equipment${idx}"]);
 
-            $stmt->bindValue(':presentation', isset($_POST["Presentation${idx}"]) ?  $_POST["Presentation${idx}"] : null);
-            $stmt->bindValue(':presentation_type', isset($_POST["PresentationType${idx}"]) ?  $_POST["PresentationType${idx}"] : null);
-            $stmt->bindValue(':presentation_type_other', isset($_POST["PresentationType${idx}Other"]) ?  $_POST["PresentationType${idx}Other"] : null);
-            $stmt->bindValue(':target_audience', isset($_POST["TargetAudience${idx}"]) ?  $_POST["TargetAudience${idx}"] : null);
-            $stmt->bindValue(':age', isset($_POST["Age${idx}"]) ?  $_POST["Age${idx}"] : null);
-            $stmt->bindValue(':age_other', isset($_POST["Age${idx}Other"]) ?  $_POST["Age${idx}Other"] : null);
-            $stmt->bindValue(':time_preference', isset($_POST["TimePreference${idx}"]) ?  $_POST["TimePreference${idx}"] : null);
-            $stmt->bindValue(':time_preference_other', isset($_POST["TimePreference${idx}Other"]) ?  $_POST["TimePreference${idx}Other"] : null);
-            $stmt->bindValue(':space_preference', isset($_POST["SpacePreference${idx}"]) ?  $_POST["SpacePreference${idx}"] : null);
-            $stmt->bindValue(':space_preference_other', isset($_POST["SpacePreference${idx}Other"]) ?  $_POST["SpacePreference${idx}Other"] : null);
+            $stmt->bindValue(':presentation', isset($PostData["Presentation${idx}"]) ?  $PostData["Presentation${idx}"] : null);
+            $stmt->bindValue(':presentation_type', isset($PostData["PresentationType${idx}"]) ?  $PostData["PresentationType${idx}"] : null);
+            $stmt->bindValue(':presentation_type_other', isset($PostData["PresentationType${idx}Other"]) ?  $PostData["PresentationType${idx}Other"] : null);
+            $stmt->bindValue(':target_audience', isset($PostData["TargetAudience${idx}"]) ?  $PostData["TargetAudience${idx}"] : null);
+            $stmt->bindValue(':age', isset($PostData["Age${idx}"]) ?  $PostData["Age${idx}"] : null);
+            $stmt->bindValue(':age_other', isset($PostData["Age${idx}Other"]) ?  $PostData["Age${idx}Other"] : null);
+            $stmt->bindValue(':time_preference', isset($PostData["TimePreference${idx}"]) ?  $PostData["TimePreference${idx}"] : null);
+            $stmt->bindValue(':time_preference_other', isset($PostData["TimePreference${idx}Other"]) ?  $PostData["TimePreference${idx}Other"] : null);
+            $stmt->bindValue(':space_preference', isset($PostData["SpacePreference${idx}"]) ?  $PostData["SpacePreference${idx}"] : null);
+            $stmt->bindValue(':space_preference_other', isset($PostData["SpacePreference${idx}Other"]) ?  $PostData["SpacePreference${idx}Other"] : null);
 
-            $limit = isset($_POST["Limit${idx}"]) ?  ($_POST["Limit${idx}"] == 'Other' ? 1 : 0) : 0;
+            $limit = isset($PostData["Limit${idx}"]) ?  ($PostData["Limit${idx}"] == 'Other' ? 1 : 0) : 0;
             $stmt->bindValue(':participant_limit', $limit );
-            $stmt->bindValue(':participant_limit_detail', $limit && isset($_POST["Limit${idx}Other"]) ?  $_POST["Limit${idx}Other"] : null);
+            $stmt->bindValue(':participant_limit_detail', $limit && isset($PostData["Limit${idx}Other"]) ?  $PostData["Limit${idx}Other"] : null);
 
-			$fee = isset($_POST["Fee${idx}"]) ? ($_POST["Fee${idx}"] == 'Other' ? 1 : 0 ) : 0;
+			$fee = isset($PostData["Fee${idx}"]) ? ($PostData["Fee${idx}"] == 'Other' ? 1 : 0 ) : 0;
             $stmt->bindValue(':fee', $fee );
-            $stmt->bindValue(':fee_detail', $fee && isset($_POST["Fee${idx}Other"]) ?  $_POST["Fee${idx}Other"] : null);
+            $stmt->bindValue(':fee_detail', $fee && isset($PostData["Fee${idx}Other"]) ?  $PostData["Fee${idx}Other"] : null);
 
 			ExecutePDO($stmt);
 		}
@@ -171,13 +184,13 @@ catch (Exception $e)
 		$key = $fieldInfo[0];
 		$label = $fieldInfo[1];
 		$fieldType = $fieldInfo[2];
-		$value = isset($_POST[$key]) ? $_POST[$key] : '';
+		$value = isset($PostData[$key]) ? $PostData[$key] : '';
 
 		if ( $fieldType == 'radiobutton' && $value == 'Other' )
 		{
-			if ( isset($_POST["${key}Other"]) )
+			if ( isset($PostData["${key}Other"]) )
 			{
-				$value = '[' . $_POST["${key}Other"] . ']';
+				$value = '[' . $PostData["${key}Other"] . ']';
 			}
 			else 
 			{
@@ -253,13 +266,13 @@ catch (Exception $e)
 	foreach( $config->fieldList as $fieldInfo )
 	{
 		$key = $fieldInfo[0];
-		$value = isset($_POST[$key]) ? $_POST[$key] : '';
+		$value = isset($PostData[$key]) ? $PostData[$key] : '';
 
 		if ( $fieldInfo[2] == 'radiobutton' && $value == 'Other' )
 		{
-			if ( isset($_POST["${key}Other"]) )
+			if ( isset($PostData["${key}Other"]) )
 			{
-				$value = '[' . $_POST["${key}Other"] . ']';
+				$value = '[' . $PostData["${key}Other"] . ']';
 			}
 			else 
 			{

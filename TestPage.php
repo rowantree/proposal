@@ -1,5 +1,4 @@
 <?php
-// Added this line on the master
 	session_start();
 
 	$data = array();

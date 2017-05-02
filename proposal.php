@@ -37,7 +37,7 @@
  * Add field requirements - must answer 'most' fields
  * Remote Coundown fields from result file.
  *
- * $Id: proposal.php 98 2016-11-27 17:07:31Z stephen $
+ * $Id: proposal.php 100 2017-03-02 12:51:49Z stephen $
  */
 ?>
 	
@@ -219,7 +219,7 @@ The Rites of Spring program is centered around pagan and earth-centered culture,
 We prioritize offerings on these themes: rituals from different traditions, connecting with our natural physical environment, specific spiritual practices, musical and artistic endeavors, hands-on creative activities and the practical applications of pagan values in the world - through service, lifestyle choices or activism.
 </p>
 <p class="c9">
-If you are interested in presenting a workshop or performance, leading a discussion or a ritual or hosting a children’s activity, please fill out the form below and return it to us by <?php echo $config->deadLine?>.  The first round of program decisions will be made by April 1.  Proposals received after the deadline may still be selected if any slots remain available.  All decisions will be made by May 1.  Please list your proposals in order of your preference. We are most likely to select only one of your proposals and will not accept more than two unless the third is a program specifically for children or families. Thank you.
+If you are interested in presenting a workshop or performance, leading a discussion or a ritual or hosting a children&rsquo;s activity, please fill out the form below and return it to us by <?php echo $config->deadLine?>.  The first round of program decisions will be made by April 1.  Proposals received after the deadline may still be selected if any slots remain available.  All decisions will be made by May 1.  Please list your proposals in order of your preference. We are most likely to select only one of your proposals and will not accept more than two unless the third is a program specifically for children or families. Thank you.
 </p>
 
 <?php } else {?>
@@ -479,7 +479,7 @@ function RadioListOption($label, $fieldName, $dataArray, $fldIdx)
 function RadioList($fieldName, $dataArray, $fldIdx)
 {
 	global $data;
-	$currentValue = $data["$fieldName$fldIdx"];
+	$currentValue = ISSET($data["$fieldName$fldIdx"]) ? $data["$fieldName$fldIdx"] : '' ;
 	//echo "Field $fieldName$fldIdx $currentValue<br>";
 	foreach( $dataArray as $key=>$value )
 	{
@@ -543,15 +543,26 @@ for ($idx=1; $idx <= $config->proposalCnt ; ++ $idx)
 	if ($config->eventCode=='ROS') {
 		RadioListOption('What TYPE of presentation is this (select one)?', 'PresentationType', $config->PresentationType, $idx);
 	}
-	RadioListOption('This workshop is appropriate for (select one):','TargetAudience', $config->Audience, $idx);
-	RadioListOption('What is the AGE LEVEL appropriate for attendees of this workshop (select one)?','Age', $config->AgeGroup, $idx);
+
+	//RadioListOption('This workshop is appropriate for (select one):','TargetAudience', $config->Audience, $idx);
+	//RadioListOption('What is the AGE LEVEL appropriate for attendees of this workshop (select one)?','Age', $config->AgeGroup, $idx);
+	
+	RadioListOption('Who are the appropriate participants for this presentation. (Select One):','Age', $config->AgeGroup, $idx);
+	
 	if ($config->eventCode=='ROS') {
 		RadioListOption('TIME preferences (select one)','TimePreference', $config->TimePreference, $idx);
 		RadioListOption('SPACE requirements (select one):','SpacePreference', $config->SpacePreference, $idx);
 	}
 	RadioListOption('Is there a limit to the number of attendees for this presentation?', 'Limit', $config->AttendeeLimit, $idx);
 	RadioListOption('Is there a materials fee to attend this presentation?','Fee', $config->MaterialsFee, $idx);
+
 ?>
+
+<div class="q">Are you hoping we can provide any special equipment? (white board and markers, projector, etc.) Please detail below:
+<div class="choice">
+<?php TextField("Equipment$idx", 100, 100) ?>
+</div></div>
+
 <div class="q">Description of Presentation:
 <div class="choice">(You may copy and paste into this box,the limit is still <?php echo $config->proposalTextSize;?>  characters.)
 If you wish us to include special formatting in the program, use the following:<br>

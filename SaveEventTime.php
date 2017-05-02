@@ -14,15 +14,16 @@ try
 
     if ( $request->EventTimeId > 0 )
     {
-        $stmt = $db->prepare("UPDATE event_time SET EventTimeName=:EventTimeName WHERE EventTimeId=:EventTimeId");
+        $stmt = $db->prepare("UPDATE event_time SET EventTimeName=:EventTimeName, EventTimeSort=:EventTimeSort WHERE EventTimeId=:EventTimeId");
     }
     else
     {
-        $stmt = $db->prepare("INSERT INTO event_time (EventTimeId, EventTimeName) VALUES(:EventTimeId, :EventTimeName)");
+        $stmt = $db->prepare("INSERT INTO event_time (EventTimeId, EventTimeName, EventTimeSort) VALUES(:EventTimeId, :EventTimeName, :EventTimeSort)");
     }
 
     $stmt->bindParam(':EventTimeId', $request->EventTimeId);
     $stmt->bindParam(':EventTimeName', $request->EventTimeName);
+    $stmt->bindParam(':EventTimeSort', $request->EventTimeSort);
 
     if (!$stmt->execute())
     {

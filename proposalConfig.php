@@ -1,7 +1,7 @@
 <?php
 	/*
 	 *
-	 * $Id: proposalConfig.php 68 2016-02-28 22:10:19Z stephen $
+	 * $Id: proposalConfig.php 100 2017-03-02 12:51:49Z stephen $
 	 *
 	 */
 
@@ -12,7 +12,7 @@ $config = SetConfig();
 function SetConfig()
 {
 	$config = new stdClass();
-	$defaultEventCode = 'FOL';
+	$defaultEventCode = 'ROS';
 
 	$config->eventCode = ISSET($_REQUEST['eventCode']) ? strtoupper($_REQUEST['eventCode']) :  $defaultEventCode;
 
@@ -31,11 +31,11 @@ function SetConfig()
 
 		case 'ROS':
 			$config->event = 'Rites of Spring';
-			$config->image = 'http://earthspirit.rowantree.org/images/earlybird38_progproposal.png';
-			$config->eventDate = '25 May, 2016';
+			$config->image = 'http://earthspirit.rowantree.org/images/earlybird39_progproposal.png';
+			$config->eventDate = '25 May, 2017';
 			$config->title = 'Rites of Spring Presenter/Performer Application';
-			$config->year = '2016';
-			$config->deadLine = 'March 1, 2016';
+			$config->year = '2017';
+			$config->deadLine = 'March 21, 2017';
 			$config->decisionDate = "April 31th";
 			$config->fb_image = 'http://earthspirit.rowantree.org/images/ros38_Program_head_fb.gif';
 			break;
@@ -119,7 +119,7 @@ function SetConfig()
 		Array("Title", "Title ", "textbox"),
 		Array("PresentationType", "Presentation Type ", "radiobutton"),
 		Array("PresentationTypeOther", "Presentation Type Other ", "other"),
-		Array("TargetAudience", "Target Audience ", "radiobutton"),
+		//Array("TargetAudience", "Target Audience ", "radiobutton"),
 		Array("Age", "Age ", "radiobutton"),
 		Array("AgeOther", "Age Other ", "other"),
 		Array("TimePreference", "Time Preference ", "radiobutton"),
@@ -131,6 +131,7 @@ function SetConfig()
 		Array("Fee", "Fee ", "radiobutton"),
 		Array("FeeOther", "Fee Detail ", "other"),
 		Array("Presentation", "Presentation ", "textbox"),
+		Array("Equipment", "Equipment ", "textbox"),
 	);
 
 
@@ -153,7 +154,7 @@ function SetConfig()
 				Array("Title${idx}", "Title ${idx}", "textbox"),
 				Array("PresentationType${idx}", "Presentation Type ${idx}", "radiobutton"),
 				Array("PresentationType${idx}Other", "Presentation Type Other ${idx}", "other"),
-				Array("TargetAudience${idx}", "Target Audience ${idx}", "radiobutton"),
+				//Array("TargetAudience${idx}", "Target Audience ${idx}", "radiobutton"),
 				Array("Age${idx}", "Age ${idx}", "radiobutton"),
 				Array("Age${idx}Other", "Age Other ${idx}", "other"),
 				Array("TimePreference${idx}", "Time Preference ${idx}", "radiobutton"),
@@ -186,11 +187,12 @@ function SetConfig()
 		);
 
 	$config->AgeGroup = array (
+			array('Everone','Everone'),
 			array('18+','18+ only'),
 			array('14+','14+'),
-			array('11+','11+'),
-			array('Children','Children'),
-			array('Family','Whole Family'),
+			array('8+','8+'),
+			array('Children','Children Under 8'),
+			array('Family','Families'),
 			array('Other','Other (please explain)')
 		);
 

@@ -7,34 +7,91 @@
 	 */
 	include_once "../common/OpenDb.php";
 
-
 	$proposal_detail_id = ISSET($_REQUEST['proposal_detail_id']) ? $_REQUEST['proposal_detail_id'] : '0';
 	$action = ISSET($_REQUEST['action']) ? $_REQUEST['action'] : '0';
-	TraceMsg("Request To $action $proposal_detail_id");
+	TraceMsg("***** ProposalMaint: Request To $action $proposal_detail_id");
+
+    $result = new stdClass();
+	$result->status = "UNKNOWN";
+	$result->action = $action;
+
 	if ($proposal_detail_id == 0)
 	{
-		echo "ERROR";
+		$result->status = "ERROR";
+		$result->msg = "No proposal_detail_id provided";
 		exit(1);
 	}
 
-	if ( $action = 'DELETE' )
+	try
 	{
-		Delete($proposal_detail_id);
-		echo "SUCCESS";
+
+		if ($action = 'DELETE')
+		{
+			$result->msg = Delete($proposal_detail_id);
+			$result->status = "SUCCESS";
+		} else if ($action = 'DUPLICATE')
+		{
+			$result->msg = Duplicate($proposal_detail_id);
+			$result->status = "SUCCESS";
+		} else
+		{
+			$result->status = "ERROR";
+			$result->msg = "Invalid Action Code";
+		}
 	}
-	else if ( $action = 'DUPLICATE' )
+	catch (Exception $e)
 	{
-		Duplicate($proposal_detail_id);
-		echo "SUCCESS";
+		TraceMsg("Caught Exception:" . $e->getMessage());
+		$result->status = "ERROR";
+		$result->msg = $e->getMessage();
 	}
 
-	echo "ERROR";
+	echo json_encode($result);
 	exit(2);
 
 
 	function Delete($proposal_detail_id)
 	{
+		$db = OpenPDO();
 
+		$stmt = $db->prepare("
+		SELECT proposal_id, COUNT(*) cnt FROM proposal_detail WHERE proposal_id = (SELECT proposal_id FROM proposal_detail WHERE proposal_detail_id=:proposal_detail_id)
+		");
+		$stmt->bindParam(':proposal_detail_id', $proposal_detail_id);
+		$result = $stmt->execute();
+		if (!$result)
+		{
+			throw new Exception("Unable to find details of proposal:" . json_encode($db->errorInfo()));
+		}
+
+		$result = $stmt->fetch();
+		$proposal_id = $result["proposal_id"];
+		$cnt = $result["cnt"];
+		TraceMsg("proposal_id:$proposal_id DetailCnt:$cnt");
+
+		// delete the requested proposal_detail
+		$stmt = $db->prepare("DELETE FROM proposal_detail WHERE proposal_detail_id=:proposal_detail_id");
+		$stmt->bindParam(':proposal_detail_id', $proposal_detail_id);
+		$stmt->execute();
+
+		if ($cnt == 1)
+		{
+			// just one detail so delete everything
+			$stmt = $db->prepare("DELETE FROM proposal_person WHERE proposal_id=:proposal_id");
+			$stmt->bindParam(':proposal_id', $proposal_id);
+			$stmt->execute();
+
+			$stmt = $db->prepare("DELETE FROM proposal WHERE proposal_id=:proposal_id");
+			$stmt->bindParam(':proposal_id', $proposal_id);
+			$stmt->execute();
+
+			return "Deleted complete proposal";
+
+		} else
+		{
+			// multiple details so just delete the detail and leave the remainder
+			return "Multiple Details for the proposal so we only deleted the referenced one";
+		}
 	}
 
 	function Duplicate($proposal_detail_id)
@@ -79,9 +136,11 @@
 		if (!$stmt->execute())
 		{
 			TraceMsg(json_encode($stmt->errorInfo()));
+			return $stmt->errorInfo();
 		} else
 		{
 			TraceMsg("That seems to have worked");
+			return "Proposal and details have been duplicated";
 		}
 	}
 
@@ -89,6 +148,4 @@
 	function TraceMsg($msg)
 	{
 		error_log( date('[ymd-His]') . ':' .$msg . "\n", 3, "trace.log");
-		echo $msg;
-		echo "<br>";
 	}

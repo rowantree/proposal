@@ -9,7 +9,7 @@ function FixString($string)
 
 function LoadData()
 {
-    $event_code = 'FOL';
+    $event_code = 'ROS';
     $event_year = 2017;
 
 	TraceMsg("LoadData $event_code $event_year");
@@ -20,11 +20,11 @@ function LoadData()
 
     $db = OpenPDO();
 
-    $sql = "SELECT LocationId, LocationName FROM location ORDER BY LocationId";
+    $sql = "SELECT LocationId, LocationName FROM location ORDER BY LocationName";
     $stmt = ExecuteQuery($db, $sql, $data);
     $data->locations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $sql = "SELECT EventTimeId, EventTimeName FROM event_time ORDER BY EventTimeId";
+    $sql = "SELECT EventTimeId, EventTimeName, EventTimeSort FROM event_time ORDER BY EventTimeSort";
     $stmt = ExecuteQuery($db, $sql, $data);
     $data->event_times = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -94,7 +94,8 @@ function LoadData()
         pd.fee_detail,
         pd.presentation,
         pd.schedule_location,
-        pd.schedule_time
+        pd.schedule_time,
+		pd.equipment
     FROM proposal_detail pd
     INNER JOIN proposal p ON pd.proposal_id = p.proposal_id
     WHERE p.event_id=$eventId;

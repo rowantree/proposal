@@ -18,10 +18,12 @@ try
 
 
     $db = OpenPDO();
-    $stmt = $db->prepare("UPDATE proposal_detail SET schedule_location=:schedule_location, schedule_time=:schedule_time WHERE proposal_detail_id=:proposal_detail_id");
+    $stmt = $db->prepare("UPDATE proposal_detail SET schedule_location=:schedule_location, schedule_time=:schedule_time, title=:title, presentation=:presentation WHERE proposal_detail_id=:proposal_detail_id");
     $stmt->bindParam(':schedule_location', $request->schedule_location);
     $stmt->bindParam(':schedule_time', $request->schedule_time);
     $stmt->bindParam(':proposal_detail_id', $request->proposal_detail_id);
+	$stmt->bindParam(':title', $request->title);
+	$stmt->bindParam(':presentation', $request->presentation);
     if (!$stmt->execute())
     {
         TraceMsg(json_encode($stmt->errorInfo()));

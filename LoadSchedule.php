@@ -102,7 +102,7 @@ try
     $times = LoadTimes($db);
     $timeCount = count($request->times);
     TraceMsg("There are $timeCount times in the data file");
-    $stmt = $db->prepare("INSERT event_time (EventTimeName) VALUES(:EventTimeName)");
+    $stmt = $db->prepare("INSERT event_time (EventTimeName, EventTimeSort) VALUES(:EventTimeName, :EventTimeSort)");
     for( $i=0; $i < $timeCount; ++$i)
     {
         $timeName = $request->times[$i];
@@ -119,6 +119,7 @@ try
         {
             TraceMsg("Adding Room: $timeName");
             $stmt->bindParam(':EventTimeName', $timeName);
+            $stmt->bindParam(':EventTimeSort', $timeName);
             $stmt->execute();
         }
     }
@@ -158,12 +159,19 @@ try
         }
     }
 
+    $result = new stdClass();
+    $result->status = 'Success';
+    echo json_encode($result);
 
 }
 catch (Exception $e)
 {
     TraceMsg("Caught Exception:" . $e->getMessage());
     error_log("LoadSchedule: Exception Report", 0);
+    $result = new stdClass();
+    $result->status = 'Failure';
+    $result->error = $e->getMessage();
+    echo json_encode($result);
 }
 
 function TraceMsg($msg)
