@@ -73,14 +73,18 @@
                             <tr>
                                 <td></td>
                                 <td ng-repeat="location in reg.GetKeys(reg.locations)" style="padding: 2px 2px 2px 2px;">
-                                    {{location}}
+                                    <button class="btn-block text-left btn-link" ng-click="reg.ShowLocation(reg.locations[location],location)">{{location}}</button>
                                 </td>
                             </tr>
                             <tr ng-repeat="timeSort in reg.GetKeys(reg.times)" style="padding: 2px 2px 2px 2px;">
-                                <td>{{reg.times[timeSort].name}}</td>
+                                <td>
+                                    <button class="btn-block text-left btn-link" ng-click="reg.ShowTime(reg.times[timeSort],index)">{{reg.times[timeSort].name}}</button>
+                                </td>
                                 <td ng-repeat="location in reg.GetKeys(reg.locations)">
-                                    <span ng-repeat="propDetails in reg.times[timeSort].proposals | filter : { schedule_location : reg.locations[location].locationId } ">
+                                    <span ng-repeat="propDetails in reg.times[timeSort].proposals | filter : { schedule_location : reg.locations[location].locationId } : true ">
+                                        <button class="btn-block text-left btn-link" ng-click="reg.ShowDetail(propDetails.proposal_detail_id)">
                                         #{{propDetails.proposal_detail_id}} {{propDetails.title}}
+                                        </button>
                                     </span>
                                 </td>
                             </tr>
@@ -228,16 +232,19 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <div ng-show="reg.action=='none'">
+                                <div ng-show="reg.MaintAction=='none'">
 									<button ng-click="reg.SaveDetail(reg.ShowData)">Save</button>
-									<button ng-click="reg.action='DELETE'">Delete</button>
-									<button ng-click="reg.action='DUPLICATE'">Duplicate</button>
+                                    <!--
+									<button ng-click="reg.MaintAction='DELETE'">Delete</button>
+									<button ng-click="reg.MaintAction='DUPLICATE'">Duplicate</button>
+									-->
+                                    {{reg.MaintActionMsg}}
 								</div>
                             </div>
-                            <div ng-show="reg.action!='none'" class="col-md-6">
-                            <button ng-click="reg.action='none'">Cancel</button>
-                            <button ng-click="reg.ProposalMaint(reg.ShowData, reg.action)">Confirm</button>
-                            {{reg.action}}
+                            <div ng-show="reg.MaintAction!='none'" class="col-md-6">
+                            <button ng-click="reg.MaintAction='none'">Cancel</button>
+                            <button ng-click="reg.ProposalMaint(reg.ShowData, reg.MaintAction)">Confirm</button>
+                            Action={{reg.MaintAction}}
                             </div>
                         </div>
 
@@ -246,7 +253,7 @@
 
                         <div class="row">
                             <div class="col-md-2">Legal Name</div>
-                            <div class="col-md-10">{{reg.ShowData.Proposal.legal_name}}</div>
+                            <div class="col-md-10"><a href="#" ng-click="reg.ShowProposalById(reg.ShowData.Proposal.proposal_id)">{{reg.ShowData.Proposal.legal_name}}</a></div>
                         </div>
                         <div class="row">
                             <div class="col-md-2">Program Name</div>
@@ -283,6 +290,7 @@
 
                     </div>
 
+                    <!-- Show all person details and then all program details -->
                     <div ng-show="reg.ShowFlag=='FULL'">
 
                         <div class="row">
@@ -308,6 +316,8 @@
                         <div class="row">
                             <div class="col-md-2">Biography</div>
                             <div class="col-md-10"><textarea class="form-control" ng-model="reg.ShowData.biography"></textarea></div>
+                            <button ng-click="reg.SaveBio(reg.ShowData)">Save</button>
+                            {{reg.BioSaveMsg}}
                         </div>
                         <div ng-repeat="data in reg.ShowData.otherPeople">
                             <div class="row"><div class="col-md-12"><hr></div></div>
@@ -331,7 +341,7 @@
 
                             <div class="row">
                                 <div class="col-md-2"><b>Title</b></div>
-                                <div class="col-md-10"><button class="btn-block text-left" ng-click="reg.ShowDetail(data.proposal_detail_id)">{{data.title}}</button></div>
+                                <div class="col-md-10"><a href="#" class="btn-block text-left" ng-click="reg.ShowDetail(data.proposal_detail_id)">{{data.title}}</a></div>
                             </div>
 
                             <div class="row">

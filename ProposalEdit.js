@@ -87,16 +87,29 @@ myApp.filter('orderObjectBy', function() {
 			this.ScanData();
 		}
 
+		this.ShowProposalById = function(proposal_id) {
+			for (var idx = 0, len = this.proposalData.length; idx < len; ++idx)
+			{
+				if (this.proposalData[idx].proposal_id == proposal_id)
+				{
+					this.ShowProposal(idx);
+				}
+			}
+
+		}
+
 		this.ShowProposal = function($index)
 		{
 			this.ShowData = this.proposalData[$index];
 			this.ShowFlag = 'FULL';
 			this.UserMsg = "Showing Selected Proposal";
+			this.BioSaveMsg = "";
 		}
 
 		// User has selected a specific presentation to show
 		this.ShowDetail = function(proposal_detail_id)
 		{
+			this.MaintActionMsg = "";
 			for( var idx=0, len=this.proposalDetails.length; idx < len; ++idx )
 			{
 				if ( this.proposalDetails[idx].proposal_detail_id == proposal_detail_id)
@@ -136,7 +149,7 @@ myApp.filter('orderObjectBy', function() {
 		{
 			this.UserMsg = action;
 			var scope = this;
-			this.action = 'none';
+			this.MaintAction = 'none';
 
 			var url = 'ProposalMaint.php?proposal_detail_id=' + detailData.proposal_detail_id + "&action=" + action;
 			$http.get(url)
@@ -149,9 +162,37 @@ myApp.filter('orderObjectBy', function() {
 				});
 		}
 
+		this.SaveBio = function(proposalData)
+		{
+			this.UserMsg = "Saving Data";
+			this.BioSaveMsg = "saving";
+			var scope = this;
+
+			var newData = {};
+			newData.action = "UpdateBio";
+			newData.proposal_id = proposalData.proposal_id;
+			newData.biography = proposalData.biography;
+
+			var res = $http.post('SavePresentationChanges.php', angular.toJson(newData));
+
+			res.success(function(data, status, headers, config)
+			{
+				scope.UserMsg = "Success";
+				scope.BioSaveMsg = "Success";
+			});
+			res.error(function(data, status, headers, config)
+			{
+				scope.UserMsg = "Error";
+				scope.BioSaveMsg = "Error";
+			});
+
+			this.ScanData();
+		}
+
 		this.SaveDetail = function(detailData)
 		{
 			this.UserMsg = "Saving Data";
+			this.MaintActionMsg = "saving";
 			var scope = this;
 
 			var newData = {};
@@ -164,10 +205,12 @@ myApp.filter('orderObjectBy', function() {
 			res.success(function(data, status, headers, config)
 			{
 				scope.UserMsg = "Success";
+				scope.MaintActionMsg = "success";
 			});
 			res.error(function(data, status, headers, config)
 			{
 				scope.UserMsg = "Error";
+				scope.MaintActionMsg = "error";
 			});
 
 			this.ScanData();
@@ -177,6 +220,7 @@ myApp.filter('orderObjectBy', function() {
 
 		this.Reload = function()
 		{
+			this.MaintAction = 'none';
 			this.UserMsg = "Loading data from server";
 			this.clanData = [];
 			this.changeCnt = 0;
@@ -301,7 +345,6 @@ myApp.filter('orderObjectBy', function() {
 
 		}
 
-		this.action = 'none';
 		this.ShowFlag = 'GRID';
 		this.ShowMenu = 'Program';
 		this.Reload();
